@@ -77,7 +77,7 @@ CREATE TABLE event_choice (
 
 -- Mutable per-playthrough state table.
 CREATE TABLE game_session (
-    id UUID,
+    id UUID NOT NULL,
     status VARCHAR(16) NOT NULL,
     game_end_reason VARCHAR(24),
     current_location_id BIGINT NOT NULL,
