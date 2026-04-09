@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
+    // Preload related data used by catalog DTO mapping to avoid N+1 lazy-load queries.
     @EntityGraph(attributePaths = {"location", "choices"})
     List<EventEntity> findAllByOrderByIdAsc();
 
