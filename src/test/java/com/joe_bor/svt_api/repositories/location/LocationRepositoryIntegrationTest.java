@@ -51,5 +51,9 @@ class LocationRepositoryIntegrationTest {
         assertThat(detours)
                 .extracting(location -> location.getBranchesFrom().getId())
                 .containsExactly(2L, 6L, 7L);
+
+        assertThat(detours)
+                .extracting(LocationEntity::getRouteOrder)
+                .containsOnlyNulls();
     }
 }
