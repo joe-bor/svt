@@ -21,7 +21,10 @@ class LocationRepositoryIntegrationTest {
 
     @Test
     void loadsMainRouteInRouteOrder() {
-        List<LocationEntity> mainRoute = locationRepository.findByDetourFalseOrderByRouteOrderAsc();
+        List<LocationEntity> mainRoute = locationRepository.findAllByOrderByDetourAscRouteOrderAscIdAsc()
+                .stream()
+                .filter(location -> !location.isDetour())
+                .toList();
 
         assertThat(mainRoute)
                 .hasSize(10)
@@ -35,7 +38,10 @@ class LocationRepositoryIntegrationTest {
 
     @Test
     void loadsDetoursWithExpectedBranchLinks() {
-        List<LocationEntity> detours = locationRepository.findByDetourTrueOrderByIdAsc();
+        List<LocationEntity> detours = locationRepository.findAllByOrderByDetourAscRouteOrderAscIdAsc()
+                .stream()
+                .filter(LocationEntity::isDetour)
+                .toList();
 
         assertThat(detours)
                 .hasSize(3)

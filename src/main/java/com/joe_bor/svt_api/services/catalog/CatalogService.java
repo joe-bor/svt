@@ -8,39 +8,26 @@ import com.joe_bor.svt_api.models.event.EventEntity;
 import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.repositories.event.EventRepository;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
-import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CatalogService {
 
     private final LocationRepository locationRepository;
     private final EventRepository eventRepository;
 
-    public CatalogService(LocationRepository locationRepository, EventRepository eventRepository) {
-        this.locationRepository = locationRepository;
-        this.eventRepository = eventRepository;
-    }
-
-    @Transactional(readOnly = true)
     public List<LocationDto> getLocations() {
-        List<LocationDto> locations = new ArrayList<>();
-        locationRepository.findByDetourFalseOrderByRouteOrderAsc()
+        return locationRepository.findAllByOrderByDetourAscRouteOrderAscIdAsc()
                 .stream()
                 .map(this::toLocationDto)
-                .forEach(locations::add);
-
-        locationRepository.findByDetourTrueOrderByIdAsc()
-                .stream()
-                .map(this::toLocationDto)
-                .forEach(locations::add);
-
-        return locations;
+                .toList();
     }
 
-    @Transactional(readOnly = true)
     public List<EventDto> getEvents() {
         return eventRepository.findAllByOrderByIdAsc()
                 .stream()
