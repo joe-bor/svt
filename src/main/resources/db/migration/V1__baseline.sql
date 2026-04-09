@@ -1,0 +1,2 @@
+-- Baseline migration for initial project scaffolding.
+-- Domain schema will be introduced in future migrations after ERD finalization.
