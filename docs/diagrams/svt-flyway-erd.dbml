@@ -1,0 +1,97 @@
+Project svt_api {
+    database_type: 'H2'
+    Note: 'Schema-only ERD view for Flyway V1. Seed data is in svt-flyway.dbml.'
+}
+
+Table location {
+    id bigint [pk, not null, increment]
+    name varchar(32) [not null, unique]
+    description varchar(128) [not null]
+    route_order smallint
+    is_detour boolean [not null]
+    branches_from_id bigint
+    latitude double [not null]
+    longitude double [not null]
+    detour_bonus_stat varchar(16)
+    detour_bonus_value integer
+
+    checks {
+        `(is_detour = FALSE AND route_order IS NOT NULL AND route_order BETWEEN 1 AND 10 AND branches_from_id IS NULL) OR (is_detour = TRUE AND route_order IS NULL AND branches_from_id IS NOT NULL)` [name: 'location_route_shape_chk']
+        `(detour_bonus_stat IS NULL AND detour_bonus_value IS NULL) OR (detour_bonus_stat IS NOT NULL AND detour_bonus_value IS NOT NULL)` [name: 'location_bonus_pair_chk']
+        `is_detour = TRUE OR detour_bonus_stat IS NULL` [name: 'location_bonus_only_on_detour_chk']
+    }
+}
+
+Table event {
+    id bigint [pk, not null, increment]
+    name varchar(48) [not null, unique]
+    description varchar(255) [not null]
+    event_type varchar(16) [not null]
+    location_id bigint
+    has_choice boolean [not null]
+    auto_cash_effect integer [not null]
+    auto_customers_effect integer [not null]
+    auto_morale_effect integer [not null]
+    auto_coffee_effect integer [not null]
+    auto_bugs_effect integer [not null]
+    special_effect varchar(20)
+
+    checks {
+        `(event_type = 'LOCATION' AND location_id IS NOT NULL) OR (event_type <> 'LOCATION' AND location_id IS NULL)` [name: 'event_location_id_type_chk']
+    }
+}
+
+Table event_choice {
+    id bigint [pk, not null, increment]
+    event_id bigint [not null]
+    label varchar(64) [not null]
+    cash_effect integer [not null]
+    customers_effect integer [not null]
+    morale_effect integer [not null]
+    coffee_effect integer [not null]
+    bugs_effect integer [not null]
+    special_effect varchar(20)
+}
+
+Table game_session {
+    id uuid [pk, not null]
+    status varchar(16) [not null]
+    game_end_reason varchar(24)
+    current_location_id bigint [not null]
+    game_start_date date [not null]
+    current_game_date date [not null]
+    cash integer [not null]
+    customers integer [not null]
+    morale integer [not null]
+    coffee integer [not null]
+    bugs integer [not null]
+    is_mutiny_ready boolean [not null]
+    is_burnout_ready boolean [not null]
+    is_linkedin_bonus_active boolean [not null]
+    pending_crypto_settlement integer
+}
+
+Table game_session_pending_events {
+    game_session_id uuid [not null]
+    event_id bigint [not null]
+
+    indexes {
+        (game_session_id, event_id) [pk, name: 'pk_game_session_pending_events']
+    }
+}
+
+Table game_session_fired_location_events {
+    game_session_id uuid [not null]
+    event_id bigint [not null]
+
+    indexes {
+        (game_session_id, event_id) [pk, name: 'pk_game_session_fired_location_events']
+    }
+}
+
+Ref fk_location_branches_from_id: location.branches_from_id > location.id
+Ref fk_event_location_id: event.location_id > location.id
+Ref fk_event_choice_event_id: event_choice.event_id > event.id
+Ref fk_game_session_current_location_id: game_session.current_location_id > location.id
+Ref fk_game_session_pending_events_game_session_id: game_session_pending_events.game_session_id > game_session.id [delete: cascade]
+Ref fk_game_session_fired_location_events_game_session_id: game_session_fired_location_events.game_session_id > game_session.id [delete: cascade]
