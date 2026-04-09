@@ -1,0 +1,72 @@
+-- Seed all 18 events with fixed IDs and locked type/location wiring.
+-- Burnout Wave (id=12) carries event-level LOSE_ACTION and has no event_choice rows.
+-- Bug Crisis (id=13) uses all-zero auto effects because its dynamic scaling is service-owned.
+INSERT INTO event (
+    id,
+    name,
+    description,
+    event_type,
+    location_id,
+    has_choice,
+    auto_cash_effect,
+    auto_customers_effect,
+    auto_morale_effect,
+    auto_coffee_effect,
+    auto_bugs_effect,
+    special_effect
+) VALUES
+    (1, 'Server Outage', 'Your cloud provider goes down mid-demo', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (2, 'Viral Tweet', 'A popular account posts about your product', 'RANDOM', NULL, FALSE, 0, 3, 0, 0, 0, NULL),
+    (3, 'Team Conflict', 'Engineers disagree on architecture', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (4, 'Free Coffee Shipment', 'A sponsor sends a pallet of cold brew', 'RANDOM', NULL, FALSE, 0, 0, 0, 5, 0, NULL),
+    (5, 'Investor Cold Email', 'An angel investor reaches out', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (6, 'Coffee Spill Disaster', 'Coffee meets laptop', 'RANDOM', NULL, FALSE, 0, 0, 0, -3, 2, NULL),
+    (7, 'Acqui-hire Offer', 'Big Tech wants to buy your team', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (8, 'Open Source Contribution', 'A stranger submits a bug-fixing PR', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (9, 'Surprise Medical Bill', 'A teammate''s RSI flares up', 'RANDOM', NULL, FALSE, -1500, 0, 5, 0, 0, NULL),
+    (10, 'Podcast Invite', 'A tech podcast wants an interview', 'RANDOM', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (11, 'Team Mutiny', 'The team threatens to quit over low morale', 'CONDITIONAL', NULL, TRUE, 0, 0, 0, 0, 0, NULL),
+    (12, 'Burnout Wave', 'The team is running on empty — forced rest', 'CONDITIONAL', NULL, FALSE, 0, 0, -10, 0, 0, 'LOSE_ACTION'),
+    (13, 'Bug Crisis', 'The app is crashing in production', 'CONDITIONAL', NULL, FALSE, 0, 0, 0, 0, 0, NULL),
+    (14, 'LinkedIn Recruiter', 'A LinkedIn recruiter offers everyone jobs', 'LOCATION', 3, TRUE, 0, 0, 0, 0, 0, NULL),
+    (15, 'Googler Poaching', 'A Google recruiter lures a senior engineer', 'LOCATION', 4, TRUE, 0, 0, 0, 0, 0, NULL),
+    (16, 'Stanford Interns', 'Stanford CS students want to join', 'LOCATION', 5, TRUE, 0, 0, 0, 0, 0, NULL),
+    (17, 'Sand Hill Road Pitch Day', 'Open pitch competition on Sand Hill', 'LOCATION', 6, TRUE, 0, 0, 0, 0, 0, NULL),
+    (18, 'Beach Team Retreat', 'The team decompresses by the ocean', 'LOCATION', 13, TRUE, 0, 0, 0, 0, 0, NULL);
+
+-- Seed all 24 event choices with fixed IDs and section 3.2 authoritative mapping.
+INSERT INTO event_choice (
+    id,
+    event_id,
+    label,
+    cash_effect,
+    customers_effect,
+    morale_effect,
+    coffee_effect,
+    bugs_effect,
+    special_effect
+) VALUES
+    (1, 1, 'Fix it yourself', 0, 0, -10, -2, 0, NULL),
+    (2, 1, 'Pay for support', -2000, 0, 0, 0, 0, NULL),
+    (3, 3, 'Mediate the dispute', 0, 0, -5, 0, -2, NULL),
+    (4, 3, 'Let them fight it out', 0, 0, -10, 0, 1, NULL),
+    (5, 5, 'Take the meeting', 1500, 0, 0, -2, 0, NULL),
+    (6, 5, 'Ignore the email', 0, 0, 0, 0, 0, NULL),
+    (7, 7, 'Accept the offer', 0, 0, 0, 0, 0, 'GAME_OVER'),
+    (8, 7, 'Decline — we''re not for sale', 0, 0, 10, 0, 0, NULL),
+    (9, 8, 'Accept the PR', 0, 0, 0, 0, -3, NULL),
+    (10, 8, 'Reject the PR', 0, 0, 0, 0, 0, NULL),
+    (11, 10, 'Go on the show', 0, 2, 0, -2, 0, NULL),
+    (12, 10, 'Skip it', 0, 0, 0, 0, 0, NULL),
+    (13, 11, 'Give everyone raises', -3000, 0, 20, 0, 0, NULL),
+    (14, 11, 'Deliver an inspirational speech', 0, 0, 0, 0, 0, 'RANDOM_5050'),
+    (15, 14, 'Accept the LinkedIn job', 0, 0, 0, 0, 0, 'GAME_OVER'),
+    (16, 14, 'Decline, take the VC intro instead', 0, 0, 0, 0, 0, 'LINKEDIN_BONUS'),
+    (17, 15, 'Match their salary offer', -2500, 0, 0, 0, 0, NULL),
+    (18, 15, 'Let them go', 0, -2, 0, 0, 1, NULL),
+    (19, 16, 'Hire the interns', -2000, 0, 0, 0, -3, NULL),
+    (20, 16, 'Pass on them', 0, 0, 0, 0, 0, NULL),
+    (21, 17, 'Enter the competition', 0, 0, 0, 0, 0, 'RANDOM_5050'),
+    (22, 17, 'Skip it', 0, 0, 0, 0, 0, NULL),
+    (23, 18, 'Bonfire and late night', 0, 0, 25, -2, 0, NULL),
+    (24, 18, 'Early bedtime', 0, 0, 15, 3, 0, NULL);
