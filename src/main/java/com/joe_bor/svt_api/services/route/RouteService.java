@@ -1,7 +1,6 @@
 package com.joe_bor.svt_api.services.route;
 
 import com.joe_bor.svt_api.controllers.game.dto.AvailableNextLocationDto;
-import com.joe_bor.svt_api.controllers.game.dto.RouteType;
 import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ public class RouteService {
                 location.getId(),
                 location.getName(),
                 location.isDetour(),
-                location.isDetour() ? RouteType.DETOUR : RouteType.MAIN_ROUTE,
                 TERMINAL_ROUTE_ORDER - effectiveOrder + 1,
                 location.getDetourBonusStat() != null ? location.getDetourBonusStat().name() : null,
                 location.getDetourBonusValue()
