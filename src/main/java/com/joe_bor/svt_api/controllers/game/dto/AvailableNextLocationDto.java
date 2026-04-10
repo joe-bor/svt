@@ -1,7 +1,12 @@
 package com.joe_bor.svt_api.controllers.game.dto;
 
-/**
- * Placeholder. Phase 3 adds fields.
- */
-public record AvailableNextLocationDto() {
+public record AvailableNextLocationDto(
+        long locationId,
+        String name,
+        boolean detour,
+        RouteType routeType,
+        int eta,
+        String detourBonusStat,
+        Integer detourBonusValue
+) {
 }

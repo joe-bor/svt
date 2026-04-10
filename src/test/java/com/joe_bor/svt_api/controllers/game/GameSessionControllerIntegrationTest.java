@@ -11,8 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joe_bor.svt_api.repositories.location.LocationRepository;
+import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +32,12 @@ class GameSessionControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private GameSessionRepository gameSessionRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Test
     void createGameReturns201WithStartingState() throws Exception {
@@ -52,7 +61,14 @@ class GameSessionControllerIntegrationTest {
                 .andExpect(jsonPath("$.weather").isMap())
                 .andExpect(jsonPath("$.pendingEvents.length()").value(0))
                 .andExpect(jsonPath("$.availableActions.length()").value(0))
-                .andExpect(jsonPath("$.availableNextLocations.length()").value(0))
+                .andExpect(jsonPath("$.availableNextLocations.length()").value(1))
+                .andExpect(jsonPath("$.availableNextLocations[0].locationId").value(2))
+                .andExpect(jsonPath("$.availableNextLocations[0].name").value("Santa Clara"))
+                .andExpect(jsonPath("$.availableNextLocations[0].detour").value(false))
+                .andExpect(jsonPath("$.availableNextLocations[0].routeType").value("MAIN_ROUTE"))
+                .andExpect(jsonPath("$.availableNextLocations[0].eta").value(9))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusStat").value(nullValue()))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusValue").value(nullValue()))
                 .andExpect(jsonPath("$.lastResolution").value(nullValue()));
     }
 
@@ -82,11 +98,52 @@ class GameSessionControllerIntegrationTest {
 
         MvcResult getResult = mockMvc.perform(get("/api/games/" + id))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.availableNextLocations.length()").value(1))
+                .andExpect(jsonPath("$.availableNextLocations[0].locationId").value(2))
+                .andExpect(jsonPath("$.availableNextLocations[0].name").value("Santa Clara"))
+                .andExpect(jsonPath("$.availableNextLocations[0].detour").value(false))
+                .andExpect(jsonPath("$.availableNextLocations[0].routeType").value("MAIN_ROUTE"))
+                .andExpect(jsonPath("$.availableNextLocations[0].eta").value(9))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusStat").value(nullValue()))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusValue").value(nullValue()))
                 .andReturn();
 
         JsonNode getJson = objectMapper.readTree(getResult.getResponse().getContentAsString());
 
+        assertThat(getJson.get("availableNextLocations")).isEqualTo(createJson.get("availableNextLocations"));
         assertThat(getJson).isEqualTo(createJson);
+    }
+
+    @Test
+    void getGameAtBranchPointReturnsBothMainAndDetour() throws Exception {
+        MvcResult createResult = mockMvc.perform(post("/api/games").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        JsonNode createJson = objectMapper.readTree(createResult.getResponse().getContentAsString());
+        UUID id = UUID.fromString(createJson.get("id").asText());
+
+        var session = gameSessionRepository.findById(id).orElseThrow();
+        session.setCurrentLocation(locationRepository.findById(2L).orElseThrow());
+        gameSessionRepository.save(session);
+
+        mockMvc.perform(get("/api/games/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.availableNextLocations.length()").value(2))
+                .andExpect(jsonPath("$.availableNextLocations[0].locationId").value(3))
+                .andExpect(jsonPath("$.availableNextLocations[0].name").value("Sunnyvale"))
+                .andExpect(jsonPath("$.availableNextLocations[0].detour").value(false))
+                .andExpect(jsonPath("$.availableNextLocations[0].routeType").value("MAIN_ROUTE"))
+                .andExpect(jsonPath("$.availableNextLocations[0].eta").value(8))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusStat").value(nullValue()))
+                .andExpect(jsonPath("$.availableNextLocations[0].detourBonusValue").value(nullValue()))
+                .andExpect(jsonPath("$.availableNextLocations[1].locationId").value(11))
+                .andExpect(jsonPath("$.availableNextLocations[1].name").value("Cupertino"))
+                .andExpect(jsonPath("$.availableNextLocations[1].detour").value(true))
+                .andExpect(jsonPath("$.availableNextLocations[1].routeType").value("DETOUR"))
+                .andExpect(jsonPath("$.availableNextLocations[1].eta").value(9))
+                .andExpect(jsonPath("$.availableNextLocations[1].detourBonusStat").value("BUGS"))
+                .andExpect(jsonPath("$.availableNextLocations[1].detourBonusValue").value(-3));
     }
 
     @Test
