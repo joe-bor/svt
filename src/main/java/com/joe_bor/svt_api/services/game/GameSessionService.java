@@ -12,6 +12,7 @@ import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.LocationDtoMapper;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.turn.PendingEventService;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -30,6 +31,7 @@ public class GameSessionService {
     private final LocationRepository locationRepository;
     private final GameBalanceProperties balance;
     private final RouteService routeService;
+    private final PendingEventService pendingEventService;
 
     @Transactional
     public GameStateDto createGame() {
@@ -56,6 +58,7 @@ public class GameSessionService {
         session.setMutinyReady(true);
         session.setBurnoutReady(true);
         session.setLinkedinBonusActive(false);
+        pendingEventService.rollEvents(session);
 
         gameSessionRepository.save(session);
 
@@ -89,7 +92,7 @@ public class GameSessionService {
                 session.getPendingCryptoSettlement(),
                 session.isLinkedinBonusActive(),
                 new WeatherDto(),
-                List.of(),
+                pendingEventService.toPendingEventDtos(session.getPendingEventIds()),
                 List.of(),
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
                         ? routeService.getAvailableNextLocations(session.getCurrentLocation())

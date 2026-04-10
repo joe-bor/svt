@@ -19,6 +19,7 @@ public class TurnService {
 
     private final GameSessionRepository gameSessionRepository;
     private final GameSessionService gameSessionService;
+    private final PendingEventService pendingEventService;
 
     @Transactional
     public GameStateDto advanceTurn(UUID gameId) {
@@ -28,6 +29,15 @@ public class TurnService {
         if (session.getStatus() != GameSessionStatus.IN_PROGRESS) {
             throw new GameConflictException("Cannot advance a finished game");
         }
+
+        session.getPendingEventIds().size();
+        if (!session.getPendingEventIds().isEmpty()) {
+            return gameSessionService.getGame(session.getId());
+        }
+
+        session.setCurrentGameDate(session.getCurrentGameDate().plusDays(1));
+        pendingEventService.rollEvents(session);
+        gameSessionRepository.save(session);
 
         return gameSessionService.getGame(session.getId());
     }
