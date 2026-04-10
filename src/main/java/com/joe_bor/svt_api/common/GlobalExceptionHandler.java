@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -46,6 +47,24 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(
+            MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String parameterName = ex.getName() != null ? ex.getName() : "parameter";
+        String parameterValue = ex.getValue() != null ? ex.getValue().toString() : "null";
+
+        ApiErrorResponse body = new ApiErrorResponse(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Invalid value for parameter '" + parameterName + "': " + parameterValue,
+                request.getRequestURI(),
+                List.of()
+        );
+
+        return ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(Exception.class)
