@@ -6,11 +6,11 @@ import com.joe_bor.svt_api.controllers.catalog.dto.LocationDto;
 import com.joe_bor.svt_api.controllers.game.dto.GameStateDto;
 import com.joe_bor.svt_api.controllers.game.dto.StatsDto;
 import com.joe_bor.svt_api.controllers.game.dto.WeatherDto;
-import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.models.session.GameSessionStatus;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
+import com.joe_bor.svt_api.services.LocationDtoMapper;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -22,15 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class GameSessionService {
 
     private final GameSessionRepository gameSessionRepository;
     private final LocationRepository locationRepository;
     private final GameBalanceProperties balance;
 
+    @Transactional
     public GameStateDto createGame() {
-        LocationEntity startingLocation = locationRepository.findById(balance.startingLocationId())
+        var startingLocation = locationRepository.findById(balance.startingLocationId())
                 .orElseThrow(() -> new IllegalStateException(
                         "Starting location not seeded: id=" + balance.startingLocationId()));
 
@@ -59,7 +60,6 @@ public class GameSessionService {
         return toDto(session);
     }
 
-    @Transactional(readOnly = true)
     public GameStateDto getGame(UUID id) {
         GameSessionEntity session = gameSessionRepository.findById(id)
                 .orElseThrow(() -> new GameNotFoundException(id));
@@ -77,7 +77,7 @@ public class GameSessionService {
                 session.getGameStartDate(),
                 session.getCurrentGameDate(),
                 currentTurn,
-                toLocationDto(session.getCurrentLocation()),
+                LocationDtoMapper.toLocationDto(session.getCurrentLocation()),
                 new StatsDto(
                         session.getCash(),
                         session.getCustomers(),
@@ -91,21 +91,6 @@ public class GameSessionService {
                 List.of(),
                 List.of(),
                 null
-        );
-    }
-
-    private LocationDto toLocationDto(LocationEntity location) {
-        return new LocationDto(
-                location.getId(),
-                location.getName(),
-                location.getDescription(),
-                location.getRouteOrder(),
-                location.isDetour(),
-                location.getBranchesFrom() != null ? location.getBranchesFrom().getId() : null,
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getDetourBonusStat() != null ? location.getDetourBonusStat().name() : null,
-                location.getDetourBonusValue()
         );
     }
 }
