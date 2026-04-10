@@ -5,9 +5,9 @@ import com.joe_bor.svt_api.controllers.catalog.dto.EventDto;
 import com.joe_bor.svt_api.controllers.catalog.dto.LocationDto;
 import com.joe_bor.svt_api.models.event.EventChoiceEntity;
 import com.joe_bor.svt_api.models.event.EventEntity;
-import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.repositories.event.EventRepository;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
+import com.joe_bor.svt_api.services.LocationDtoMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class CatalogService {
     public List<LocationDto> getLocations() {
         return locationRepository.findAllByOrderByDetourAscRouteOrderAscIdAsc()
                 .stream()
-                .map(this::toLocationDto)
+                .map(LocationDtoMapper::toLocationDto)
                 .toList();
     }
 
@@ -33,21 +33,6 @@ public class CatalogService {
                 .stream()
                 .map(this::toEventDto)
                 .toList();
-    }
-
-    private LocationDto toLocationDto(LocationEntity location) {
-        return new LocationDto(
-                location.getId(),
-                location.getName(),
-                location.getDescription(),
-                location.getRouteOrder(),
-                location.isDetour(),
-                location.getBranchesFrom() != null ? location.getBranchesFrom().getId() : null,
-                location.getLatitude(),
-                location.getLongitude(),
-                location.getDetourBonusStat() != null ? location.getDetourBonusStat().name() : null,
-                location.getDetourBonusValue()
-        );
     }
 
     private EventDto toEventDto(EventEntity event) {
