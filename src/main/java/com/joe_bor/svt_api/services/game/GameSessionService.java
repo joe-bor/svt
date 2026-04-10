@@ -11,6 +11,7 @@ import com.joe_bor.svt_api.models.session.GameSessionStatus;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.LocationDtoMapper;
+import com.joe_bor.svt_api.services.route.RouteService;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,6 +29,7 @@ public class GameSessionService {
     private final GameSessionRepository gameSessionRepository;
     private final LocationRepository locationRepository;
     private final GameBalanceProperties balance;
+    private final RouteService routeService;
 
     @Transactional
     public GameStateDto createGame() {
@@ -89,7 +91,9 @@ public class GameSessionService {
                 new WeatherDto(),
                 List.of(),
                 List.of(),
-                List.of(),
+                session.getStatus() == GameSessionStatus.IN_PROGRESS
+                        ? routeService.getAvailableNextLocations(session.getCurrentLocation())
+                        : List.of(),
                 null
         );
     }
