@@ -4,7 +4,6 @@ public record AvailableNextLocationDto(
         long locationId,
         String name,
         boolean detour,
-        RouteType routeType,
         int eta,
         String detourBonusStat,
         Integer detourBonusValue

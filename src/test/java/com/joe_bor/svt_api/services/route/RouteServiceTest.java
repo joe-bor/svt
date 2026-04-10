@@ -2,7 +2,6 @@ package com.joe_bor.svt_api.services.route;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.joe_bor.svt_api.controllers.game.dto.RouteType;
 import com.joe_bor.svt_api.models.location.DetourBonusStat;
 import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
@@ -30,7 +29,6 @@ class RouteServiceTest {
                     assertThat(next.locationId()).isEqualTo(2L);
                     assertThat(next.name()).isEqualTo("Santa Clara");
                     assertThat(next.detour()).isFalse();
-                    assertThat(next.routeType()).isEqualTo(RouteType.MAIN_ROUTE);
                     assertThat(next.eta()).isEqualTo(9);
                     assertThat(next.detourBonusStat()).isNull();
                     assertThat(next.detourBonusValue()).isNull();
@@ -54,7 +52,6 @@ class RouteServiceTest {
                             assertThat(mainRoute.locationId()).isEqualTo(3L);
                             assertThat(mainRoute.name()).isEqualTo("Sunnyvale");
                             assertThat(mainRoute.detour()).isFalse();
-                            assertThat(mainRoute.routeType()).isEqualTo(RouteType.MAIN_ROUTE);
                             assertThat(mainRoute.eta()).isEqualTo(8);
                             assertThat(mainRoute.detourBonusStat()).isNull();
                             assertThat(mainRoute.detourBonusValue()).isNull();
@@ -63,7 +60,6 @@ class RouteServiceTest {
                             assertThat(detour.locationId()).isEqualTo(11L);
                             assertThat(detour.name()).isEqualTo("Cupertino");
                             assertThat(detour.detour()).isTrue();
-                            assertThat(detour.routeType()).isEqualTo(RouteType.DETOUR);
                             assertThat(detour.eta()).isEqualTo(9);
                             assertThat(detour.detourBonusStat()).isEqualTo("BUGS");
                             assertThat(detour.detourBonusValue()).isEqualTo(-3);
@@ -98,7 +94,6 @@ class RouteServiceTest {
                     assertThat(next.locationId()).isEqualTo(3L);
                     assertThat(next.name()).isEqualTo("Sunnyvale");
                     assertThat(next.detour()).isFalse();
-                    assertThat(next.routeType()).isEqualTo(RouteType.MAIN_ROUTE);
                     assertThat(next.eta()).isEqualTo(8);
                     assertThat(next.detourBonusStat()).isNull();
                     assertThat(next.detourBonusValue()).isNull();
@@ -121,7 +116,6 @@ class RouteServiceTest {
                     assertThat(detour.locationId()).isEqualTo(13L);
                     assertThat(detour.name()).isEqualTo("Half Moon Bay");
                     assertThat(detour.detour()).isTrue();
-                    assertThat(detour.routeType()).isEqualTo(RouteType.DETOUR);
                     assertThat(detour.eta()).isEqualTo(4);
                     assertThat(detour.detourBonusStat()).isNull();
                     assertThat(detour.detourBonusValue()).isNull();
