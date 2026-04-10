@@ -100,6 +100,16 @@ class GameSessionControllerIntegrationTest {
     }
 
     @Test
+    void getGameReturns400ForMalformedId() throws Exception {
+        mockMvc.perform(get("/api/games/not-a-uuid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.path").value("/api/games/not-a-uuid"))
+                .andExpect(jsonPath("$.message").value("Invalid value for parameter 'id': not-a-uuid"));
+    }
+
+    @Test
     void createGameProducesDistinctIds() throws Exception {
         MvcResult first = mockMvc.perform(post("/api/games").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
