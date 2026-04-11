@@ -32,7 +32,8 @@ public class PendingEventService {
         session.getPendingEventIds().add(selectedEvent.getId());
     }
 
-    public List<PendingEventDto> toPendingEventDtos(Set<Long> eventIds) {
+    // Load pending events, sort them into the wire-contract roll order, then map them to DTOs.
+    public List<PendingEventDto> loadPendingEventDtos(Set<Long> eventIds) {
         if (eventIds == null || eventIds.isEmpty()) {
             return List.of();
         }

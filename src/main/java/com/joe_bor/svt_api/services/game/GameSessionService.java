@@ -66,9 +66,12 @@ public class GameSessionService {
     }
 
     public GameStateDto getGame(UUID id) {
-        GameSessionEntity session = gameSessionRepository.findById(id)
+        return toDto(getGameSession(id));
+    }
+
+    public GameSessionEntity getGameSession(UUID id) {
+        return gameSessionRepository.findById(id)
                 .orElseThrow(() -> new GameNotFoundException(id));
-        return toDto(session);
     }
 
     private GameStateDto toDto(GameSessionEntity session) {
@@ -92,7 +95,7 @@ public class GameSessionService {
                 session.getPendingCryptoSettlement(),
                 session.isLinkedinBonusActive(),
                 new WeatherDto(),
-                pendingEventService.toPendingEventDtos(session.getPendingEventIds()),
+                pendingEventService.loadPendingEventDtos(session.getPendingEventIds()),
                 List.of(),
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
                         ? routeService.getAvailableNextLocations(session.getCurrentLocation())
