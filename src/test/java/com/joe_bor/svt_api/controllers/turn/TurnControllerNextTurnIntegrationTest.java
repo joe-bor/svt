@@ -54,6 +54,11 @@ class TurnControllerNextTurnIntegrationTest {
                 .andExpect(jsonPath("$.currentTurn").value(2))
                 .andExpect(jsonPath("$.pendingEvents.length()").value(1))
                 .andExpect(jsonPath("$.pendingEvents[0].event.eventType").value("RANDOM"))
+                .andExpect(jsonPath("$.availableActions.length()").value(7))
+                .andExpect(jsonPath("$.availableActions[0].type").value("TRAVEL"))
+                .andExpect(jsonPath("$.availableActions[6].type").value("INVEST_CRYPTO"))
+                .andExpect(jsonPath("$.availableActions[6].minAmount").value(500))
+                .andExpect(jsonPath("$.availableActions[6].maxAmount").value(8000))
                 .andExpect(jsonPath("$.lastResolution").value(nullValue()));
     }
 
@@ -68,6 +73,7 @@ class TurnControllerNextTurnIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.currentGameDate").value(currentGameDate))
                 .andExpect(jsonPath("$.currentTurn").value(1))
+                .andExpect(jsonPath("$.availableActions.length()").value(7))
                 .andReturn();
 
         JsonNode response = objectMapper.readTree(result.getResponse().getContentAsString());
