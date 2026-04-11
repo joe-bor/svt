@@ -1,11 +1,9 @@
 package com.joe_bor.svt_api.services.turn;
 
 import com.joe_bor.svt_api.common.GameConflictException;
-import com.joe_bor.svt_api.common.GameNotFoundException;
 import com.joe_bor.svt_api.controllers.game.dto.GameStateDto;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.models.session.GameSessionStatus;
-import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.game.GameSessionService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -17,27 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class TurnService {
 
-    private final GameSessionRepository gameSessionRepository;
     private final GameSessionService gameSessionService;
     private final PendingEventService pendingEventService;
 
     @Transactional
     public GameStateDto advanceTurn(UUID gameId) {
-        GameSessionEntity session = gameSessionRepository.findById(gameId)
-                .orElseThrow(() -> new GameNotFoundException(gameId));
+        GameSessionEntity session = gameSessionService.getGameSession(gameId);
 
         if (session.getStatus() != GameSessionStatus.IN_PROGRESS) {
             throw new GameConflictException("Cannot advance a finished game");
         }
 
-        session.getPendingEventIds().size();
         if (!session.getPendingEventIds().isEmpty()) {
             return gameSessionService.getGame(session.getId());
         }
 
         session.setCurrentGameDate(session.getCurrentGameDate().plusDays(1));
         pendingEventService.rollEvents(session);
-        gameSessionRepository.save(session);
 
         return gameSessionService.getGame(session.getId());
     }

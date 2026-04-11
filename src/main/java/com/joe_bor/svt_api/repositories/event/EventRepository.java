@@ -15,6 +15,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
     List<EventEntity> findByEventTypeOrderByIdAsc(EventType eventType);
 
+    // Preload related data for pending-event DTO rendering to avoid lazy-load query fanout.
     @EntityGraph(attributePaths = {"location", "choices"})
     List<EventEntity> findAllByIdIn(Collection<Long> ids);
 }
