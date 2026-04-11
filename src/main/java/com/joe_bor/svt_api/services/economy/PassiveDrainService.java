@@ -15,6 +15,7 @@ public class PassiveDrainService {
 
     @Transactional
     public int applyCoffeeDecay(GameSessionEntity session) {
+        // Resource decay is split out from cash economy so "team stamina ticks down" reads as a different rule family.
         int updatedCoffee = Math.max(0, session.getCoffee() - balance.economy().coffeeDecayPerTurn());
         int delta = updatedCoffee - session.getCoffee();
         session.setCoffee(updatedCoffee);

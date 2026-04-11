@@ -43,6 +43,7 @@ public class GameSessionService {
 
     @Transactional
     public GameStateDto createGame() {
+        // 1. Resolve the seeded start location and randomize the opening date inside the configured window.
         var startingLocation = locationRepository.findById(balance.startingLocationId())
                 .orElseThrow(() -> new IllegalStateException(
                         "Starting location not seeded: id=" + balance.startingLocationId()));
@@ -52,6 +53,7 @@ public class GameSessionService {
         LocalDate startDate = today.minusDays(offsetDays);
         GameBalanceProperties.StartingStats stats = balance.startingStats();
 
+        // 2. Build the new session with its starting stats and one-time startup flags.
         GameSessionEntity session = GameSessionEntity.create();
         session.setId(UUID.randomUUID());
         session.setStatus(GameSessionStatus.IN_PROGRESS);
@@ -66,6 +68,8 @@ public class GameSessionService {
         session.setMutinyReady(true);
         session.setBurnoutReady(true);
         session.setLinkedinBonusActive(false);
+
+        // 3. Queue the first pending event, persist the session, and return the normal game-state projection.
         pendingEventService.rollEvents(session);
 
         gameSessionRepository.save(session);
@@ -87,12 +91,14 @@ public class GameSessionService {
     }
 
     public GameStateDto toDto(GameSessionEntity session, TurnResolutionSummaryDto resolution) {
+        // 1. Compute turn context and inspect pending events to understand the current board state.
         int currentTurn = Math.toIntExact(
                 ChronoUnit.DAYS.between(session.getGameStartDate(), session.getCurrentGameDate())) + 1;
         List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
         boolean hasLoseActionPending = pendingEvents.stream()
                 .anyMatch(event -> event.getSpecialEffect() == SpecialEffectType.LOSE_ACTION);
 
+        // 2. Build the response from stable session fields plus dynamic affordances for the current turn.
         return new GameStateDto(
                 session.getId(),
                 session.getStatus(),

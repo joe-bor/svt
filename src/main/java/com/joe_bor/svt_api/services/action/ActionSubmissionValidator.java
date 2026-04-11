@@ -27,6 +27,7 @@ public class ActionSubmissionValidator {
 
     private final GameBalanceProperties balance;
 
+    // This is the "can the player even submit this turn package?" gate before turn resolution mutates state.
     public ValidatedActionSubmission validate(
             GameSessionEntity session,
             SubmitActionRequest request,

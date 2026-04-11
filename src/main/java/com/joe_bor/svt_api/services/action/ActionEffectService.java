@@ -30,11 +30,13 @@ public class ActionEffectService {
             SubmitActionRequest.ActionPayload action,
             List<AvailableNextLocationDto> legalDestinations
     ) {
+        // 1. Capture the visible pre-action state so the response can report only this action's delta.
         VisibleStatsSnapshot before = VisibleStatsSnapshot.capture(session);
         Long destinationLocationId = null;
         String detourBonusApplied = null;
         List<String> notes = List.of();
 
+        // 2. Apply the chosen action's game rule.
         switch (action.type()) {
             case TRAVEL -> {
                 LocationProgressionService.TravelOutcome outcome = locationProgressionService.travel(
@@ -93,6 +95,7 @@ public class ActionEffectService {
             }
         }
 
+        // 3. Normalize the resulting state and publish this action's contribution to lastResolution.
         clampSession(session);
         VisibleStatsSnapshot after = VisibleStatsSnapshot.capture(session);
 
