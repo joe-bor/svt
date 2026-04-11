@@ -2,6 +2,7 @@ package com.joe_bor.svt_api.services.game;
 
 import com.joe_bor.svt_api.common.GameNotFoundException;
 import com.joe_bor.svt_api.config.GameBalanceProperties;
+import com.joe_bor.svt_api.controllers.action.dto.TurnResolutionSummaryDto;
 import com.joe_bor.svt_api.controllers.catalog.dto.LocationDto;
 import com.joe_bor.svt_api.controllers.game.dto.GameStateDto;
 import com.joe_bor.svt_api.controllers.game.dto.StatsDto;
@@ -81,7 +82,11 @@ public class GameSessionService {
                 .orElseThrow(() -> new GameNotFoundException(id));
     }
 
-    private GameStateDto toDto(GameSessionEntity session) {
+    public GameStateDto toDto(GameSessionEntity session) {
+        return toDto(session, null);
+    }
+
+    public GameStateDto toDto(GameSessionEntity session, TurnResolutionSummaryDto resolution) {
         int currentTurn = Math.toIntExact(
                 ChronoUnit.DAYS.between(session.getGameStartDate(), session.getCurrentGameDate())) + 1;
         List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
@@ -112,7 +117,7 @@ public class GameSessionService {
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
                         ? routeService.getAvailableNextLocations(session.getCurrentLocation())
                         : List.of(),
-                null
+                resolution
         );
     }
 }
