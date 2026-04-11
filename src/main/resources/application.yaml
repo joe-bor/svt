@@ -38,3 +38,39 @@ game:
     starting-location-id: 1
     start-date-window-days: 365
     timezone: America/Los_Angeles
+    economy:
+      revenue-per-customer: 300
+      operating-cost: 2000
+      coffee-decay-per-turn: 1
+    action-costs:
+      travel:
+        cash-cost: 300
+        coffee-cost: 2
+      rest:
+        morale-gain: 15
+        coffee-gain: 3
+      work-on-product:
+        morale-cost: 5
+        coffee-cost: 2
+        bugs-reduced: 3
+      marketing:
+        cash-cost: 2000
+        customers-gained: 3
+      pitch-vcs:
+        morale-cost: 15
+        coffee-cost: 3
+        morale-gate: 60
+        cash-gained: 3000
+        customers-gained: 3
+        linkedin-bonus-cash: 1500
+      buy-supplies:
+        cash-cost: 1500
+        coffee-gained: 8
+    crypto:
+      min-invest: 500
+      leverage-multiplier: 5
+      fallback-delta-min: -0.30
+      fallback-delta-max: 0.30
+    thresholds:
+      cash-bankrupt: -5000
+      terminal-location-id: 10
