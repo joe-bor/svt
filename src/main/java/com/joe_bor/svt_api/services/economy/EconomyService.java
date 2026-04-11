@@ -15,7 +15,7 @@ public class EconomyService {
 
     @Transactional
     public int applyPassiveEconomy(GameSessionEntity session) {
-        // Customers generate turn revenue, then the company pays its fixed operating burn.
+        // Money passives live here: customers generate turn revenue, then the company pays its fixed operating burn.
         int delta = (session.getCustomers() * balance.economy().revenuePerCustomer())
                 - balance.economy().operatingCost();
         session.setCash(session.getCash() + delta);

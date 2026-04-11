@@ -52,10 +52,12 @@ public class ActionService {
     public GameStateDto resolveAction(UUID gameId, SubmitActionRequest request) {
         GameSessionEntity session = gameSessionService.getGameSession(gameId);
         List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
+
+        // 1. Validate the submitted turn package.
         ActionSubmissionValidator.ValidatedActionSubmission validated =
                 actionSubmissionValidator.validate(session, request, pendingEvents);
 
-        // A turn always resolves in the same player-facing order: events first, then passives, then one action.
+        // 2. Resolve pending events.
         List<TurnResolutionSummaryDto.EventResolutionDetail> eventResolutions = new ArrayList<>();
         for (EventEntity event : pendingEvents) {
             TurnResolutionSummaryDto.EventResolutionDetail resolution = event.isHasChoice()
@@ -75,6 +77,8 @@ public class ActionService {
             }
         }
 
+        // 3. Apply passive turn effects.
+        // Passive systems tick after events so they reflect any turn-opening fallout before the player acts.
         int cashFromEconomy = economyService.applyPassiveEconomy(session);
         Integer cryptoSettlement = normalizeNullable(economyService.applyCryptoSettlement(session));
         int coffeeDecay = passiveDrainService.applyCoffeeDecay(session);
@@ -85,18 +89,22 @@ public class ActionService {
                 cryptoSettlement
         );
 
+        // Recheck legality after passives because coffee decay or event fallout can invalidate an otherwise valid plan.
         actionAffordabilityService.validateActionLegal(
                 session,
                 request.action().type(),
                 validated.hasLoseActionPending()
         );
 
+        // 4. Execute one player action.
         TurnResolutionSummaryDto.ActionResolutionDetail actionResolution = actionEffectService.applyAction(
                 session,
                 request.action(),
                 routeService.getAvailableNextLocations(session.getCurrentLocation())
         );
 
+        // 5. Evaluate win/loss and return the updated state.
+        // Win/loss is evaluated last so the response reflects the final state after the whole turn settles.
         GameEndReason reason = winLossEvaluator.evaluateAndApply(session);
         session.getPendingEventIds().clear();
 
@@ -169,8 +177,10 @@ public class ActionService {
             // The seed data points to "coin flip" choices, but the actual outcomes are game-rule owned here.
             boolean positive = ThreadLocalRandom.current().nextBoolean();
             if (choice.getId() == MUTINY_RANDOM_CHOICE_ID) {
+                // Mutiny swings team morale only; it never changes cash or customers directly.
                 session.setMorale(session.getMorale() + (positive ? 15 : -10));
             } else if (choice.getId() == SAND_HILL_RANDOM_CHOICE_ID) {
+                // Sand Hill either lands a funding-style spike or tanks morale after a bad pitch.
                 if (positive) {
                     session.setCash(session.getCash() + 4_000);
                     session.setCustomers(session.getCustomers() + 4);

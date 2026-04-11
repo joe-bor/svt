@@ -25,10 +25,12 @@ public class ActionAffordabilityService {
     private final RouteService routeService;
 
     public List<AvailableActionDto> computeAvailableActions(GameSessionEntity session, boolean hasLoseActionPending) {
+        // 1. Forced-rest events replace the normal action menu with the only legal choice for this turn.
         if (hasLoseActionPending) {
             return List.of(baseAction(ActionType.SKIP, 0, 0, 0, false, false, null, null));
         }
 
+        // 2. Load the balance knobs that decide which actions the player can currently afford.
         List<AvailableActionDto> actions = new ArrayList<>();
         GameBalanceProperties.ActionCosts actionCosts = balance.actionCosts();
         GameBalanceProperties.Travel travel = actionCosts.travel();
@@ -37,6 +39,7 @@ public class ActionAffordabilityService {
         GameBalanceProperties.PitchVcs pitchVcs = actionCosts.pitchVcs();
         GameBalanceProperties.BuySupplies buySupplies = actionCosts.buySupplies();
 
+        // 3. Add each action whose resource gates and route constraints are satisfied right now.
         boolean hasRouteOptions = !routeService.getAvailableNextLocations(session.getCurrentLocation()).isEmpty();
         if (hasRouteOptions && session.getCoffee() >= travel.coffeeCost()) {
             actions.add(baseAction(
@@ -117,6 +120,7 @@ public class ActionAffordabilityService {
             ));
         }
 
+        // 4. Return an immutable snapshot so callers treat availability as read-only turn state.
         return List.copyOf(actions);
     }
 
