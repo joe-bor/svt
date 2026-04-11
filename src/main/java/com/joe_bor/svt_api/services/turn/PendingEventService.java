@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Picks pending events for a turn and builds the pending-event response list.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,7 +35,7 @@ public class PendingEventService {
         session.getPendingEventIds().add(selectedEvent.getId());
     }
 
-    // Load pending events, sort them into the wire-contract roll order, then map them to DTOs.
+    // Build pending events in the order the API returns them.
     public List<PendingEventDto> loadPendingEventDtos(Set<Long> eventIds) {
         if (eventIds == null || eventIds.isEmpty()) {
             return List.of();

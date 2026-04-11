@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
-    // Preload related data used by catalog DTO mapping to avoid N+1 lazy-load queries.
+    // Load each event with its location and choices for the catalog response.
     @EntityGraph(attributePaths = {"location", "choices"})
     List<EventEntity> findAllByOrderByIdAsc();
 
     List<EventEntity> findByEventTypeOrderByIdAsc(EventType eventType);
 
-    // Preload related data for pending-event DTO rendering to avoid lazy-load query fanout.
+    // Load each event with its location and choices for the pending-event response.
     @EntityGraph(attributePaths = {"location", "choices"})
     List<EventEntity> findAllByIdIn(Collection<Long> ids);
 }

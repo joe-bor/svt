@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Moves the game forward when needed and returns the current turn state.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
