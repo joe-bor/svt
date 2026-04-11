@@ -1,7 +1,10 @@
 package com.joe_bor.svt_api.services.action;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.joe_bor.svt_api.common.DomainValidationException;
+import com.joe_bor.svt_api.common.GameConflictException;
 import com.joe_bor.svt_api.config.GameBalanceProperties;
 import com.joe_bor.svt_api.controllers.game.dto.AvailableActionDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
@@ -185,6 +188,38 @@ class ActionAffordabilityServiceTest {
                 .extracting(AvailableActionDto::type)
                 .contains(ActionType.MARKETING, ActionType.BUY_SUPPLIES)
                 .doesNotContain(ActionType.INVEST_CRYPTO);
+    }
+
+    @Test
+    void validateActionLegalRejectsSkipWithoutForcedRest() {
+        var sanJose = location(1L, "San Jose", (short) 1, false, null);
+        ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
+
+        assertThatThrownBy(() -> service.validateActionLegal(healthySession(sanJose), ActionType.SKIP, false))
+                .isInstanceOf(GameConflictException.class)
+                .hasMessage("SKIP is only legal when a forced-rest event is pending");
+    }
+
+    @Test
+    void validateActionLegalRejectsNonSkipWhenForcedRestIsPending() {
+        var sanJose = location(1L, "San Jose", (short) 1, false, null);
+        ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
+
+        assertThatThrownBy(() -> service.validateActionLegal(healthySession(sanJose), ActionType.REST, true))
+                .isInstanceOf(GameConflictException.class)
+                .hasMessage("Burnout Wave forces SKIP this turn");
+    }
+
+    @Test
+    void validateActionLegalRejectsUnavailableActionWithDomainValidationError() {
+        var sanJose = location(1L, "San Jose", (short) 1, false, null);
+        GameSessionEntity session = healthySession(sanJose);
+        session.setMorale(59);
+        ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
+
+        assertThatThrownBy(() -> service.validateActionLegal(session, ActionType.PITCH_VCS, false))
+                .isInstanceOf(DomainValidationException.class)
+                .hasMessage("Action is not currently available: PITCH_VCS");
     }
 
     private static ActionAffordabilityService actionAffordabilityService(RouteService routeService) {
