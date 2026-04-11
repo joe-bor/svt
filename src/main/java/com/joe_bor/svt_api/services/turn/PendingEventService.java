@@ -37,16 +37,22 @@ public class PendingEventService {
 
     // Build pending events in the order the API returns them.
     public List<PendingEventDto> loadPendingEventDtos(Set<Long> eventIds) {
+        return toPendingEventDtos(loadPendingEventEntities(eventIds));
+    }
+
+    public List<EventEntity> loadPendingEventEntities(Set<Long> eventIds) {
         if (eventIds == null || eventIds.isEmpty()) {
             return List.of();
         }
 
         Collection<Long> ids = Set.copyOf(eventIds);
-        List<EventEntity> sortedEvents = eventRepository.findAllByIdIn(ids).stream()
+        return eventRepository.findAllByIdIn(ids).stream()
                 .sorted(Comparator.comparingInt((EventEntity event) -> rollPriority(event.getEventType()))
                         .thenComparing(EventEntity::getId))
                 .toList();
+    }
 
+    public List<PendingEventDto> toPendingEventDtos(List<EventEntity> sortedEvents) {
         return java.util.stream.IntStream.range(0, sortedEvents.size())
                 .mapToObj(index -> {
                     EventEntity event = sortedEvents.get(index);
