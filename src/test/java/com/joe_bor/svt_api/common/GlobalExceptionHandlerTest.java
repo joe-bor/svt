@@ -30,11 +30,28 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.validationErrors").isArray());
     }
 
+    @Test
+    void returnsBadRequestForDomainValidationException() throws Exception {
+        mockMvc.perform(get("/domain-fail").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("domain boom"))
+                .andExpect(jsonPath("$.path").value("/domain-fail"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.validationErrors").isArray());
+    }
+
     @RestController
     static class FailingController {
         @GetMapping("/fail")
         String fail() {
             throw new IllegalStateException("boom");
+        }
+
+        @GetMapping("/domain-fail")
+        String domainFail() {
+            throw new DomainValidationException("domain boom");
         }
     }
 }
