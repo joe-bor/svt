@@ -6,11 +6,14 @@ import com.joe_bor.svt_api.controllers.catalog.dto.LocationDto;
 import com.joe_bor.svt_api.controllers.game.dto.GameStateDto;
 import com.joe_bor.svt_api.controllers.game.dto.StatsDto;
 import com.joe_bor.svt_api.controllers.game.dto.WeatherDto;
+import com.joe_bor.svt_api.models.event.EventEntity;
+import com.joe_bor.svt_api.models.event.SpecialEffectType;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.models.session.GameSessionStatus;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.LocationDtoMapper;
+import com.joe_bor.svt_api.services.action.ActionAffordabilityService;
 import com.joe_bor.svt_api.services.route.RouteService;
 import com.joe_bor.svt_api.services.turn.PendingEventService;
 import java.time.LocalDate;
@@ -35,6 +38,7 @@ public class GameSessionService {
     private final GameBalanceProperties balance;
     private final RouteService routeService;
     private final PendingEventService pendingEventService;
+    private final ActionAffordabilityService actionAffordabilityService;
 
     @Transactional
     public GameStateDto createGame() {
@@ -80,6 +84,9 @@ public class GameSessionService {
     private GameStateDto toDto(GameSessionEntity session) {
         int currentTurn = Math.toIntExact(
                 ChronoUnit.DAYS.between(session.getGameStartDate(), session.getCurrentGameDate())) + 1;
+        List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
+        boolean hasLoseActionPending = pendingEvents.stream()
+                .anyMatch(event -> event.getSpecialEffect() == SpecialEffectType.LOSE_ACTION);
 
         return new GameStateDto(
                 session.getId(),
@@ -98,8 +105,10 @@ public class GameSessionService {
                 session.getPendingCryptoSettlement(),
                 session.isLinkedinBonusActive(),
                 new WeatherDto(),
-                pendingEventService.loadPendingEventDtos(session.getPendingEventIds()),
-                List.of(),
+                pendingEventService.toPendingEventDtos(pendingEvents),
+                session.getStatus() == GameSessionStatus.IN_PROGRESS
+                        ? actionAffordabilityService.computeAvailableActions(session, hasLoseActionPending)
+                        : List.of(),
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
                         ? routeService.getAvailableNextLocations(session.getCurrentLocation())
                         : List.of(),
