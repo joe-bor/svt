@@ -1,5 +1,7 @@
 package com.joe_bor.svt_api.services.action;
 
+import com.joe_bor.svt_api.common.DomainValidationException;
+import com.joe_bor.svt_api.common.GameConflictException;
 import com.joe_bor.svt_api.config.GameBalanceProperties;
 import com.joe_bor.svt_api.controllers.game.dto.AvailableActionDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
@@ -116,6 +118,21 @@ public class ActionAffordabilityService {
         }
 
         return List.copyOf(actions);
+    }
+
+    public void validateActionLegal(GameSessionEntity session, ActionType type, boolean hasLoseActionPending) {
+        if (type == ActionType.SKIP && !hasLoseActionPending) {
+            throw new GameConflictException("SKIP is only legal when a forced-rest event is pending");
+        }
+        if (type != ActionType.SKIP && hasLoseActionPending) {
+            throw new GameConflictException("Burnout Wave forces SKIP this turn");
+        }
+
+        boolean available = computeAvailableActions(session, hasLoseActionPending).stream()
+                .anyMatch(action -> action.type() == type);
+        if (!available) {
+            throw new DomainValidationException("Action is not currently available: " + type);
+        }
     }
 
     private static AvailableActionDto baseAction(
