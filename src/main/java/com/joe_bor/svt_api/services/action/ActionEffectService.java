@@ -7,8 +7,8 @@ import com.joe_bor.svt_api.controllers.action.dto.TurnResolutionSummaryDto;
 import com.joe_bor.svt_api.controllers.game.dto.AvailableNextLocationDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
+import com.joe_bor.svt_api.services.random.RandomProvider;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,7 @@ public class ActionEffectService {
 
     private final GameBalanceProperties balance;
     private final LocationProgressionService locationProgressionService;
+    private final RandomProvider randomProvider;
 
     @Transactional
     public TurnResolutionSummaryDto.ActionResolutionDetail applyAction(
@@ -115,8 +116,10 @@ public class ActionEffectService {
     // Mimics a leveraged next-turn crypto payout until Phase 8 swaps in the real market client.
     private int computeFallbackSettlement(int amount) {
         // Phase 5 keeps crypto deterministic enough for gameplay without reaching out to a real price feed yet.
-        double delta = ThreadLocalRandom.current()
-                .nextDouble(balance.crypto().fallbackDeltaMin(), Math.nextUp(balance.crypto().fallbackDeltaMax()));
+        double delta = randomProvider.nextDouble(
+                balance.crypto().fallbackDeltaMin(),
+                Math.nextUp(balance.crypto().fallbackDeltaMax())
+        );
         double leveragedMultiplier = 1 + (delta * balance.crypto().leverageMultiplier());
         return (int) Math.round(amount * leveragedMultiplier);
     }
