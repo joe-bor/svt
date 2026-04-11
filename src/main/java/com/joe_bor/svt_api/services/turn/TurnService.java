@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TurnService {
 
     private final GameSessionService gameSessionService;
-    private final PendingEventService pendingEventService;
+    private final EventRollService eventRollService;
 
     @Transactional
     public GameStateDto advanceTurn(UUID gameId) {
@@ -34,7 +34,7 @@ public class TurnService {
         }
 
         session.setCurrentGameDate(session.getCurrentGameDate().plusDays(1));
-        pendingEventService.rollEvents(session);
+        eventRollService.rollEvents(session);
 
         return gameSessionService.getGame(session.getId());
     }

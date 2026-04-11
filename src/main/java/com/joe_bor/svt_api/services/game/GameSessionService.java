@@ -15,13 +15,14 @@ import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.LocationDtoMapper;
 import com.joe_bor.svt_api.services.action.ActionAffordabilityService;
+import com.joe_bor.svt_api.services.random.RandomProvider;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.turn.EventRollService;
 import com.joe_bor.svt_api.services.turn.PendingEventService;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,8 @@ public class GameSessionService {
     private final LocationRepository locationRepository;
     private final GameBalanceProperties balance;
     private final RouteService routeService;
+    private final RandomProvider randomProvider;
+    private final EventRollService eventRollService;
     private final PendingEventService pendingEventService;
     private final ActionAffordabilityService actionAffordabilityService;
 
@@ -49,7 +52,7 @@ public class GameSessionService {
                         "Starting location not seeded: id=" + balance.startingLocationId()));
 
         LocalDate today = LocalDate.now(balance.timezone());
-        int offsetDays = ThreadLocalRandom.current().nextInt(1, balance.startDateWindowDays() + 1);
+        int offsetDays = 1 + randomProvider.nextInt(balance.startDateWindowDays());
         LocalDate startDate = today.minusDays(offsetDays);
         GameBalanceProperties.StartingStats stats = balance.startingStats();
 
@@ -70,7 +73,7 @@ public class GameSessionService {
         session.setLinkedinBonusActive(false);
 
         // 3. Queue the first pending event, persist the session, and return the normal game-state projection.
-        pendingEventService.rollEvents(session);
+        eventRollService.rollEvents(session);
 
         gameSessionRepository.save(session);
 
