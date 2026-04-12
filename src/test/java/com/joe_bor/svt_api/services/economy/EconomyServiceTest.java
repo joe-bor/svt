@@ -3,6 +3,7 @@ package com.joe_bor.svt_api.services.economy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.joe_bor.svt_api.config.GameBalanceProperties;
+import com.joe_bor.svt_api.models.weather.WeatherBucket;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import java.time.ZoneId;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class EconomyServiceTest {
         GameSessionEntity session = session();
         session.setCoffee(0);
 
-        int delta = service.applyCoffeeDecay(session);
+        int delta = service.applyCoffeeDecay(session, WeatherBucket.CLEAR);
 
         assertThat(delta).isZero();
         assertThat(session.getCoffee()).isZero();
@@ -67,10 +68,22 @@ class EconomyServiceTest {
         GameSessionEntity session = session();
         session.setCoffee(4);
 
-        int delta = service.applyCoffeeDecay(session);
+        int delta = service.applyCoffeeDecay(session, WeatherBucket.CLEAR);
 
         assertThat(delta).isEqualTo(-1);
         assertThat(session.getCoffee()).isEqualTo(3);
+    }
+
+    @Test
+    void applyCoffeeDecaySkipsRainyWeather() {
+        PassiveDrainService service = new PassiveDrainService(balanceProperties());
+        GameSessionEntity session = session();
+        session.setCoffee(4);
+
+        int delta = service.applyCoffeeDecay(session, WeatherBucket.RAINY);
+
+        assertThat(delta).isZero();
+        assertThat(session.getCoffee()).isEqualTo(4);
     }
 
     private static GameSessionEntity session() {
