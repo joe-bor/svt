@@ -7,7 +7,7 @@ import com.joe_bor.svt_api.controllers.action.dto.TurnResolutionSummaryDto;
 import com.joe_bor.svt_api.controllers.game.dto.AvailableNextLocationDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
-import com.joe_bor.svt_api.services.random.RandomProvider;
+import com.joe_bor.svt_api.services.crypto.CryptoSettlementService;
 import com.joe_bor.svt_api.services.weather.WeatherModifierService;
 import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ActionEffectService {
 
     private final GameBalanceProperties balance;
     private final LocationProgressionService locationProgressionService;
-    private final RandomProvider randomProvider;
+    private final CryptoSettlementService cryptoSettlementService;
     private final WeatherModifierService weatherModifierService;
 
     @Transactional
@@ -106,7 +106,7 @@ public class ActionEffectService {
                 }
                 session.setCash(session.getCash() - amount);
                 // Crypto pays out on a later turn; this action only withholds the principal and books the settlement.
-                session.setPendingCryptoSettlement(computeFallbackSettlement(amount));
+                session.setPendingCryptoSettlement(cryptoSettlementService.settle(amount, session.getCurrentGameDate()));
                 notes = List.of("Principal withheld; settlement will resolve next turn");
             }
             case SKIP -> {
@@ -129,17 +129,6 @@ public class ActionEffectService {
                 detourBonusApplied,
                 notes
         );
-    }
-
-    // Mimics a leveraged next-turn crypto payout until Phase 8 swaps in the real market client.
-    private int computeFallbackSettlement(int amount) {
-        // Phase 5 keeps crypto deterministic enough for gameplay without reaching out to a real price feed yet.
-        double delta = randomProvider.nextDouble(
-                balance.crypto().fallbackDeltaMin(),
-                Math.nextUp(balance.crypto().fallbackDeltaMax())
-        );
-        double leveragedMultiplier = 1 + (delta * balance.crypto().leverageMultiplier());
-        return (int) Math.round(amount * leveragedMultiplier);
     }
 
     // Action effects can push values outside their legal bounds, so normalize before building deltas.

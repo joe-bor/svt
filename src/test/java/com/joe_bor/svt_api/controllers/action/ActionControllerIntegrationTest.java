@@ -13,6 +13,7 @@ import com.joe_bor.svt_api.models.weather.WeatherBucket;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
+import com.joe_bor.svt_api.support.CryptoTestConfiguration;
 import com.joe_bor.svt_api.support.WeatherTestConfiguration;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(properties = "app.environment=test")
 @AutoConfigureMockMvc
 @Transactional
-@Import(WeatherTestConfiguration.class)
+@Import({WeatherTestConfiguration.class, CryptoTestConfiguration.class})
 class ActionControllerIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -47,9 +48,13 @@ class ActionControllerIntegrationTest {
     @Autowired
     private WeatherTestConfiguration.StubWeatherTimelineService weatherTimelineService;
 
+    @Autowired
+    private CryptoTestConfiguration.StubCryptoSettlementService cryptoSettlementService;
+
     @BeforeEach
-    void resetWeather() {
+    void resetTestDoubles() {
         weatherTimelineService.reset();
+        cryptoSettlementService.reset();
     }
 
     @Test
