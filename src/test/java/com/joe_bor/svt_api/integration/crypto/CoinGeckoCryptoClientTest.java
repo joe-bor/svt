@@ -7,6 +7,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import com.joe_bor.svt_api.config.IntegrationProperties;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 class CoinGeckoCryptoClientTest {
 
+    private static final Duration END_BOUNDARY_BUFFER = Duration.ofHours(6);
+
     @Test
     void fetchDeltaBuildsMarketChartRangeRequest() {
         RestClient.Builder builder = RestClient.builder();
@@ -29,8 +32,9 @@ class CoinGeckoCryptoClientTest {
         LocalDate endDate = startDate.plusDays(1);
         long startEpoch = startDate.atStartOfDay(timezone).toEpochSecond();
         long endEpoch = endDate.atStartOfDay(timezone).toEpochSecond();
+        long bufferedEndEpoch = endDate.atStartOfDay(timezone).plus(END_BOUNDARY_BUFFER).toEpochSecond();
         long startMillis = startEpoch * 1_000L;
-        long endMillis = endEpoch * 1_000L;
+        long endMillis = endEpoch * 1_000L + Duration.ofMinutes(5).toMillis();
 
         server.expect(request -> {
                     assertThat(request.getMethod()).isEqualTo(GET);
@@ -42,7 +46,7 @@ class CoinGeckoCryptoClientTest {
                     var query = UriComponentsBuilder.fromUri(uri).build().getQueryParams();
                     assertThat(query.getFirst("vs_currency")).isEqualTo("usd");
                     assertThat(query.getFirst("from")).isEqualTo(Long.toString(startEpoch));
-                    assertThat(query.getFirst("to")).isEqualTo(Long.toString(endEpoch));
+                    assertThat(query.getFirst("to")).isEqualTo(Long.toString(bufferedEndEpoch));
                 })
                 .andRespond(withSuccess("""
                         {

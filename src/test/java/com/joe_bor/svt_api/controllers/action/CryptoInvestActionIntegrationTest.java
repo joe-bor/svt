@@ -180,13 +180,33 @@ class CryptoInvestActionIntegrationTest {
                 continue;
             }
             JsonNode event = pendingEvent.path("event");
-            JsonNode firstChoice = event.path("choices").path(0);
             ObjectNode selection = eventChoices.addObject();
             selection.put("eventId", event.path("id").asLong());
-            selection.put("choiceId", firstChoice.path("id").asLong());
+            selection.put("choiceId", stableChoice(event).path("id").asLong());
         }
         ObjectNode action = request.putObject("action");
         action.put("type", "REST");
         return request;
+    }
+
+    private static JsonNode stableChoice(JsonNode event) {
+        JsonNode fallback = event.path("choices").path(0);
+        for (JsonNode choice : event.path("choices")) {
+            if (!choice.path("specialEffect").isNull()) {
+                continue;
+            }
+            // Prefer neutral choices so the follow-up turn can exercise crypto settlement without
+            // accidentally triggering game-over or extra-randomness branches.
+            boolean zeroDelta = choice.path("cashEffect").asInt() == 0
+                    && choice.path("customersEffect").asInt() == 0
+                    && choice.path("moraleEffect").asInt() == 0
+                    && choice.path("coffeeEffect").asInt() == 0
+                    && choice.path("bugsEffect").asInt() == 0;
+            if (zeroDelta) {
+                return choice;
+            }
+            fallback = choice;
+        }
+        return fallback;
     }
 }

@@ -3,6 +3,7 @@ package com.joe_bor.svt_api.integration.crypto;
 import com.joe_bor.svt_api.config.IntegrationProperties;
 import com.joe_bor.svt_api.integration.crypto.dto.CoinGeckoMarketChartResponse;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -12,6 +13,8 @@ import org.springframework.web.client.RestClient;
 
 @Component
 public class CoinGeckoCryptoClient implements CryptoClient {
+
+    private static final Duration END_BOUNDARY_BUFFER = Duration.ofHours(6);
 
     private final RestClient restClient;
 
@@ -23,14 +26,26 @@ public class CoinGeckoCryptoClient implements CryptoClient {
 
     @Override
     public double fetchDelta(LocalDate startDate, LocalDate endDate, ZoneId timezone) {
-        long startEpoch = startDate.atStartOfDay(timezone).toEpochSecond();
-        long endEpoch = endDate.atStartOfDay(timezone).toEpochSecond();
+        // CoinGecko reference:
+        // https://docs.coingecko.com/reference/coins-id-market-chart-range
+        // The endpoint accepts UNIX timestamps and returns auto-granularity price samples, so we
+        // convert each in-game calendar date into the exact midnight boundary for the configured
+        // timeline timezone before building the request.
+        // Example: 2026-03-05 in America/Los_Angeles -> 2026-03-05T00:00:00-08:00 -> 1772697600.
+        Instant startInstant = startDate.atStartOfDay(timezone).toInstant();
+        Instant endInstant = endDate.atStartOfDay(timezone).toInstant();
+        long startEpoch = startInstant.getEpochSecond();
+        long endEpoch = endInstant.getEpochSecond();
+        // We settle on the first price at or after the true end boundary, but the response may bucket
+        // samples slightly after that instant. Extending only the fetch window keeps settlement
+        // semantics unchanged while avoiding unnecessary fallback to the synthetic client.
+        long bufferedEndEpoch = endInstant.plus(END_BOUNDARY_BUFFER).getEpochSecond();
         CoinGeckoMarketChartResponse response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v3/coins/bitcoin/market_chart/range")
                         .queryParam("vs_currency", "usd")
                         .queryParam("from", startEpoch)
-                        .queryParam("to", endEpoch)
+                        .queryParam("to", bufferedEndEpoch)
                         .build())
                 .retrieve()
                 .body(CoinGeckoMarketChartResponse.class);
@@ -39,8 +54,8 @@ public class CoinGeckoCryptoClient implements CryptoClient {
             throw new IllegalStateException("CoinGecko market chart response missing prices payload");
         }
 
-        BigDecimal startPrice = priceAtOrAfter(response.prices(), Instant.ofEpochSecond(startEpoch), "start");
-        BigDecimal endPrice = priceAtOrAfter(response.prices(), Instant.ofEpochSecond(endEpoch), "end");
+        BigDecimal startPrice = priceAtOrAfter(response.prices(), startInstant, "start");
+        BigDecimal endPrice = priceAtOrAfter(response.prices(), endInstant, "end");
         return endPrice.subtract(startPrice).doubleValue() / startPrice.doubleValue();
     }
 
