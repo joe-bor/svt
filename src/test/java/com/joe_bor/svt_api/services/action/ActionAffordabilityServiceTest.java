@@ -10,8 +10,12 @@ import com.joe_bor.svt_api.controllers.game.dto.AvailableActionDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
 import com.joe_bor.svt_api.models.location.LocationEntity;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
+import com.joe_bor.svt_api.models.weather.TemperatureBracket;
+import com.joe_bor.svt_api.models.weather.WeatherBucket;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.weather.WeatherModifierService;
+import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
 import java.lang.reflect.Proxy;
 import java.time.ZoneId;
 import java.util.List;
@@ -26,7 +30,8 @@ class ActionAffordabilityServiceTest {
     void forcedSkipReturnsOnlySkipAction() {
         ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(healthySession(sanFrancisco()), true);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(healthySession(sanFrancisco()), true, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .singleElement()
@@ -54,7 +59,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanJose.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(healthySession(sanJose), false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(healthySession(sanJose), false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -108,7 +114,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanJose.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(session, false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(session, false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -131,7 +138,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanJose.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(session, false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(session, false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -149,7 +157,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanJose.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(session, false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(session, false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -164,7 +173,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanFrancisco.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(healthySession(sanFrancisco), false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(healthySession(sanFrancisco), false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -182,7 +192,8 @@ class ActionAffordabilityServiceTest {
                 Map.of(sanJose.getId(), List.of())
         ));
 
-        List<AvailableActionDto> availableActions = service.computeAvailableActions(session, false);
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(session, false, weather(WeatherBucket.CLEAR));
 
         assertThat(availableActions)
                 .extracting(AvailableActionDto::type)
@@ -195,7 +206,11 @@ class ActionAffordabilityServiceTest {
         var sanJose = location(1L, "San Jose", (short) 1, false, null);
         ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
 
-        assertThatThrownBy(() -> service.validateActionLegal(healthySession(sanJose), ActionType.SKIP, false))
+        assertThatThrownBy(() -> service.validateActionLegal(
+                healthySession(sanJose),
+                ActionType.SKIP,
+                false,
+                weather(WeatherBucket.CLEAR)))
                 .isInstanceOf(GameConflictException.class)
                 .hasMessage("SKIP is only legal when a forced-rest event is pending");
     }
@@ -205,7 +220,11 @@ class ActionAffordabilityServiceTest {
         var sanJose = location(1L, "San Jose", (short) 1, false, null);
         ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
 
-        assertThatThrownBy(() -> service.validateActionLegal(healthySession(sanJose), ActionType.REST, true))
+        assertThatThrownBy(() -> service.validateActionLegal(
+                healthySession(sanJose),
+                ActionType.REST,
+                true,
+                weather(WeatherBucket.CLEAR)))
                 .isInstanceOf(GameConflictException.class)
                 .hasMessage("Burnout Wave forces SKIP this turn");
     }
@@ -217,13 +236,52 @@ class ActionAffordabilityServiceTest {
         session.setMorale(59);
         ActionAffordabilityService service = actionAffordabilityService(routeService(Map.of(), Map.of()));
 
-        assertThatThrownBy(() -> service.validateActionLegal(session, ActionType.PITCH_VCS, false))
+        assertThatThrownBy(() -> service.validateActionLegal(
+                session,
+                ActionType.PITCH_VCS,
+                false,
+                weather(WeatherBucket.CLEAR)))
                 .isInstanceOf(DomainValidationException.class)
                 .hasMessage("Action is not currently available: PITCH_VCS");
     }
 
     private static ActionAffordabilityService actionAffordabilityService(RouteService routeService) {
-        return new ActionAffordabilityService(balanceProperties(), routeService);
+        return new ActionAffordabilityService(balanceProperties(), routeService, new WeatherModifierService());
+    }
+
+    @Test
+    void foggyTravelShowsCoffeeSurcharge() {
+        var sanJose = location(1L, "San Jose", (short) 1, false, null);
+        var santaClara = location(2L, "Santa Clara", (short) 2, false, null);
+        ActionAffordabilityService service = actionAffordabilityService(routeService(
+                Map.of((short) 2, santaClara),
+                Map.of(sanJose.getId(), List.of())
+        ));
+
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(healthySession(sanJose), false, weather(WeatherBucket.FOGGY));
+
+        assertThat(find(availableActions, ActionType.TRAVEL).weatherSurcharge())
+                .isEqualTo(new AvailableActionDto.WeatherSurcharge(1, 0, 0));
+    }
+
+    @Test
+    void stormyTravelCanBecomeUnavailableWhenSurchargePushesCoffeeOverLimit() {
+        var sanJose = location(1L, "San Jose", (short) 1, false, null);
+        var santaClara = location(2L, "Santa Clara", (short) 2, false, null);
+        GameSessionEntity session = healthySession(sanJose);
+        session.setCoffee(3);
+        ActionAffordabilityService service = actionAffordabilityService(routeService(
+                Map.of((short) 2, santaClara),
+                Map.of(sanJose.getId(), List.of())
+        ));
+
+        List<AvailableActionDto> availableActions =
+                service.computeAvailableActions(session, false, weather(WeatherBucket.STORMY));
+
+        assertThat(availableActions)
+                .extracting(AvailableActionDto::type)
+                .doesNotContain(ActionType.TRAVEL);
     }
 
     private static AvailableActionDto find(List<AvailableActionDto> actions, ActionType type) {
@@ -282,6 +340,16 @@ class ActionAffordabilityServiceTest {
                 new GameBalanceProperties.Crypto(500, 5, -0.30, 0.30),
                 new GameBalanceProperties.Thresholds(-5000, 10L)
         );
+    }
+
+    private static WeatherSnapshot weather(WeatherBucket bucket) {
+        int weatherCode = switch (bucket) {
+            case CLEAR -> 0;
+            case FOGGY -> 45;
+            case RAINY -> 61;
+            case STORMY -> 95;
+        };
+        return new WeatherSnapshot(weatherCode, bucket, 72.0, TemperatureBracket.NORMAL, false);
     }
 
     @SuppressWarnings("unchecked")
