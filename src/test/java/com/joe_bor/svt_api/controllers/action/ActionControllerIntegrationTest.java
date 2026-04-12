@@ -8,14 +8,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joe_bor.svt_api.models.weather.TemperatureBracket;
+import com.joe_bor.svt_api.models.weather.WeatherBucket;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
+import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
+import com.joe_bor.svt_api.support.WeatherTestConfiguration;
 import java.util.Set;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(properties = "app.environment=test")
 @AutoConfigureMockMvc
 @Transactional
+@Import(WeatherTestConfiguration.class)
 class ActionControllerIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -36,6 +43,14 @@ class ActionControllerIntegrationTest {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private WeatherTestConfiguration.StubWeatherTimelineService weatherTimelineService;
+
+    @BeforeEach
+    void resetWeather() {
+        weatherTimelineService.reset();
+    }
 
     @Test
     void submitActionResolvesPendingEventsPassivePhaseAndRestAction() throws Exception {
@@ -62,16 +77,76 @@ class ActionControllerIntegrationTest {
                 .andExpect(jsonPath("$.lastResolution.eventResolutions[0].choiceId").value(nullValue()))
                 .andExpect(jsonPath("$.lastResolution.passiveDeltas.cashFromEconomy").value(400))
                 .andExpect(jsonPath("$.lastResolution.passiveDeltas.coffeeDecay").value(-1))
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.morale").value(0))
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.coffee").value(0))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.actionType").value("REST"))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.cashDelta").value(0))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.coffeeDelta").value(3))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.moraleDelta").value(15))
+                .andExpect(jsonPath("$.lastResolution.actionResolution.weatherSurcharges.coffee").value(0))
                 .andExpect(jsonPath("$.lastResolution.winLoss.ended").value(false))
                 .andExpect(jsonPath("$.lastResolution.winLoss.reason").value(nullValue()));
     }
 
     @Test
+    void submitActionRainyWeatherSkipsPassiveCoffeeDecay() throws Exception {
+        weatherTimelineService.setSnapshot(weather(61, WeatherBucket.RAINY, 72.0, TemperatureBracket.NORMAL));
+        UUID id = createGameId();
+        configureSession(id, 1L, Set.of(4L), 8_000, 5, 80, 10, 0, false, null);
+
+        mockMvc.perform(post("/api/games/{id}/actions", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "eventChoices": [],
+                                  "action": { "type": "REST" }
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.coffeeDecay").value(0));
+    }
+
+    @Test
+    void submitActionColdWeatherAppliesMoralePressure() throws Exception {
+        weatherTimelineService.setSnapshot(weather(45, WeatherBucket.FOGGY, 49.0, TemperatureBracket.COLD));
+        UUID id = createGameId();
+        configureSession(id, 1L, Set.of(4L), 8_000, 5, 80, 10, 0, false, null);
+
+        mockMvc.perform(post("/api/games/{id}/actions", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "eventChoices": [],
+                                  "action": { "type": "REST" }
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.morale").value(-3))
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.coffee").value(0));
+    }
+
+    @Test
+    void submitActionHotWeatherAppliesMoraleAndCoffeePressure() throws Exception {
+        weatherTimelineService.setSnapshot(weather(95, WeatherBucket.STORMY, 91.0, TemperatureBracket.HOT));
+        UUID id = createGameId();
+        configureSession(id, 1L, Set.of(4L), 8_000, 5, 80, 10, 0, false, null);
+
+        mockMvc.perform(post("/api/games/{id}/actions", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "eventChoices": [],
+                                  "action": { "type": "REST" }
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.morale").value(-3))
+                .andExpect(jsonPath("$.lastResolution.passiveDeltas.temperatureModifier.coffee").value(-1));
+    }
+
+    @Test
     void submitActionTravelsAndWinsAtSanFrancisco() throws Exception {
+        weatherTimelineService.setSnapshot(weather(95, WeatherBucket.STORMY, 91.0, TemperatureBracket.HOT));
         UUID id = createGameId();
         configureSession(id, 9L, Set.of(4L), 8_000, 5, 80, 10, 0, false, null);
 
@@ -87,11 +162,16 @@ class ActionControllerIntegrationTest {
                 .andExpect(jsonPath("$.status").value("WON"))
                 .andExpect(jsonPath("$.gameEndReason").value("REACHED_SF"))
                 .andExpect(jsonPath("$.currentLocation.id").value(10))
-                .andExpect(jsonPath("$.stats.cash").value(7200))
+                .andExpect(jsonPath("$.stats.cash").value(7700))
                 .andExpect(jsonPath("$.stats.customers").value(5))
-                .andExpect(jsonPath("$.stats.coffee").value(12))
+                .andExpect(jsonPath("$.stats.coffee").value(9))
+                .andExpect(jsonPath("$.stats.morale").value(72))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.actionType").value("TRAVEL"))
+                .andExpect(jsonPath("$.lastResolution.actionResolution.cashDelta").value(200))
+                .andExpect(jsonPath("$.lastResolution.actionResolution.coffeeDelta").value(-4))
+                .andExpect(jsonPath("$.lastResolution.actionResolution.moraleDelta").value(-5))
                 .andExpect(jsonPath("$.lastResolution.actionResolution.destinationLocationId").value(10))
+                .andExpect(jsonPath("$.lastResolution.actionResolution.weatherSurcharges.coffee").value(2))
                 .andExpect(jsonPath("$.lastResolution.winLoss.ended").value(true))
                 .andExpect(jsonPath("$.lastResolution.winLoss.reason").value("REACHED_SF"));
     }
@@ -502,5 +582,14 @@ class ActionControllerIntegrationTest {
                 .andReturn();
 
         return objectMapper.readTree(result.getResponse().getContentAsString());
+    }
+
+    private static WeatherSnapshot weather(
+            int weatherCode,
+            WeatherBucket bucket,
+            double apparentTemperatureMaxF,
+            TemperatureBracket temperatureBracket
+    ) {
+        return new WeatherSnapshot(weatherCode, bucket, apparentTemperatureMaxF, temperatureBracket, false);
     }
 }

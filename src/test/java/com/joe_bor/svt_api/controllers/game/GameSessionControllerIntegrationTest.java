@@ -13,19 +13,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
+import com.joe_bor.svt_api.support.WeatherTestConfiguration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @SpringBootTest(properties = "app.environment=test")
 @AutoConfigureMockMvc
+@Import(WeatherTestConfiguration.class)
 class GameSessionControllerIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -38,6 +42,14 @@ class GameSessionControllerIntegrationTest {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private WeatherTestConfiguration.StubWeatherTimelineService weatherTimelineService;
+
+    @BeforeEach
+    void resetWeather() {
+        weatherTimelineService.reset();
+    }
 
     @Test
     void createGameReturns201WithStartingState() throws Exception {
@@ -58,7 +70,11 @@ class GameSessionControllerIntegrationTest {
                 .andExpect(jsonPath("$.stats.coffee").value(10))
                 .andExpect(jsonPath("$.pendingCryptoSettlement").value(nullValue()))
                 .andExpect(jsonPath("$.linkedinBonusActive").value(false))
-                .andExpect(jsonPath("$.weather").isMap())
+                .andExpect(jsonPath("$.weather.weatherCode").value(0))
+                .andExpect(jsonPath("$.weather.bucket").value("CLEAR"))
+                .andExpect(jsonPath("$.weather.apparentTemperatureMaxF").value(72.0))
+                .andExpect(jsonPath("$.weather.temperatureBracket").value("NORMAL"))
+                .andExpect(jsonPath("$.weather.fallback").value(false))
                 .andExpect(jsonPath("$.pendingEvents.length()").value(1))
                 .andExpect(jsonPath("$.pendingEvents[0].rollOrder").value(0))
                 .andExpect(jsonPath("$.pendingEvents[0].event.id").isNumber())

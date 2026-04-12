@@ -12,6 +12,7 @@ import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.repositories.location.LocationRepository;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
 import com.joe_bor.svt_api.services.random.RandomProvider;
+import com.joe_bor.svt_api.support.WeatherTestConfiguration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(properties = "app.environment=test")
 @AutoConfigureMockMvc
 @Transactional
+@Import(WeatherTestConfiguration.class)
 class TurnEventFlowIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -50,9 +53,13 @@ class TurnEventFlowIntegrationTest {
     @Autowired
     private DeterministicRandomProvider randomProvider;
 
+    @Autowired
+    private WeatherTestConfiguration.StubWeatherTimelineService weatherTimelineService;
+
     @BeforeEach
     void resetRandom() {
         randomProvider.reset();
+        weatherTimelineService.reset();
     }
 
     @Test

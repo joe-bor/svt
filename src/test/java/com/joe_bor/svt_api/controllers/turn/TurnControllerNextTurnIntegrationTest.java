@@ -12,14 +12,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joe_bor.svt_api.models.session.GameEndReason;
 import com.joe_bor.svt_api.models.session.GameSessionStatus;
 import com.joe_bor.svt_api.repositories.session.GameSessionRepository;
+import com.joe_bor.svt_api.support.WeatherTestConfiguration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(properties = "app.environment=test")
 @AutoConfigureMockMvc
 @Transactional
+@Import(WeatherTestConfiguration.class)
 class TurnControllerNextTurnIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -37,6 +41,14 @@ class TurnControllerNextTurnIntegrationTest {
 
     @Autowired
     private GameSessionRepository gameSessionRepository;
+
+    @Autowired
+    private WeatherTestConfiguration.StubWeatherTimelineService weatherTimelineService;
+
+    @BeforeEach
+    void resetWeather() {
+        weatherTimelineService.reset();
+    }
 
     @Test
     void advanceTurnRollsEventAndAdvancesDate() throws Exception {
