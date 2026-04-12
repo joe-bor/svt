@@ -33,8 +33,14 @@ public record TurnResolutionSummaryDto(
     public record PassiveDeltas(
             int cashFromEconomy,
             int coffeeDecay,
-            StatDeltas temperatureModifier,
+            TemperatureModifier temperatureModifier,
             Integer cryptoSettlementCredited
+    ) {
+    }
+
+    public record TemperatureModifier(
+            int morale,
+            int coffee
     ) {
     }
 
@@ -45,9 +51,14 @@ public record TurnResolutionSummaryDto(
             int moraleDelta,
             int customersDelta,
             Long destinationLocationId,
-            StatDeltas weatherSurcharges,
+            WeatherSurcharges weatherSurcharges,
             String detourBonusApplied,
             List<String> notes
+    ) {
+    }
+
+    public record WeatherSurcharges(
+            int coffee
     ) {
     }
 

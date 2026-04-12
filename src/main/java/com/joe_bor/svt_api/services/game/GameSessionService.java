@@ -17,6 +17,7 @@ import com.joe_bor.svt_api.services.LocationDtoMapper;
 import com.joe_bor.svt_api.services.action.ActionAffordabilityService;
 import com.joe_bor.svt_api.services.random.RandomProvider;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.weather.WeatherTimelineService;
 import com.joe_bor.svt_api.services.turn.EventRollService;
 import com.joe_bor.svt_api.services.turn.PendingEventService;
 import java.time.LocalDate;
@@ -43,6 +44,7 @@ public class GameSessionService {
     private final EventRollService eventRollService;
     private final PendingEventService pendingEventService;
     private final ActionAffordabilityService actionAffordabilityService;
+    private final WeatherTimelineService weatherTimelineService;
 
     @Transactional
     public GameStateDto createGame() {
@@ -100,6 +102,11 @@ public class GameSessionService {
         List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
         boolean hasLoseActionPending = pendingEvents.stream()
                 .anyMatch(event -> event.getSpecialEffect() == SpecialEffectType.LOSE_ACTION);
+        var weather = weatherTimelineService.getWeather(
+                session.getCurrentLocation().getLatitude(),
+                session.getCurrentLocation().getLongitude(),
+                session.getCurrentGameDate()
+        );
 
         // 2. Build the response from stable session fields plus dynamic affordances for the current turn.
         return new GameStateDto(
@@ -118,10 +125,10 @@ public class GameSessionService {
                 ),
                 session.getPendingCryptoSettlement(),
                 session.isLinkedinBonusActive(),
-                new WeatherDto(),
+                WeatherDto.fromSnapshot(weather),
                 pendingEventService.toPendingEventDtos(pendingEvents),
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
-                        ? actionAffordabilityService.computeAvailableActions(session, hasLoseActionPending)
+                        ? actionAffordabilityService.computeAvailableActions(session, hasLoseActionPending, weather)
                         : List.of(),
                 session.getStatus() == GameSessionStatus.IN_PROGRESS
                         ? routeService.getAvailableNextLocations(session.getCurrentLocation())
