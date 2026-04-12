@@ -13,7 +13,8 @@ class IntegrationPropertiesBindingTest {
     private IntegrationProperties integrationProperties;
 
     @Test
-    void bindsWeatherBaseUrlFromApplicationYaml() {
+    void bindsWeatherAndCryptoBaseUrlsFromApplicationYaml() {
         assertThat(integrationProperties.weather().baseUrl()).isEqualTo("https://archive-api.open-meteo.com");
+        assertThat(integrationProperties.crypto().baseUrl()).isEqualTo("https://api.coingecko.com");
     }
 }
