@@ -76,6 +76,9 @@ class OpenMeteoWeatherClientTest {
     }
 
     private static IntegrationProperties integrationProperties() {
-        return new IntegrationProperties(new IntegrationProperties.Weather("https://archive-api.open-meteo.com"));
+        return new IntegrationProperties(
+                new IntegrationProperties.Weather("https://archive-api.open-meteo.com"),
+                new IntegrationProperties.Crypto("https://api.coingecko.com")
+        );
     }
 }

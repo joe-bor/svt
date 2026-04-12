@@ -9,10 +9,16 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "game.integration")
 public record IntegrationProperties(
-        @Valid @NotNull Weather weather
+        @Valid @NotNull Weather weather,
+        @Valid @NotNull Crypto crypto
 ) {
 
     public record Weather(
+            @NotBlank String baseUrl
+    ) {
+    }
+
+    public record Crypto(
             @NotBlank String baseUrl
     ) {
     }

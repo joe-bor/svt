@@ -77,3 +77,5 @@ game:
   integration:
     weather:
       base-url: https://archive-api.open-meteo.com
+    crypto:
+      base-url: https://api.coingecko.com
