@@ -7,6 +7,8 @@ import com.joe_bor.svt_api.controllers.game.dto.AvailableActionDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.weather.WeatherModifierService;
+import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,13 @@ public class ActionAffordabilityService {
 
     private final GameBalanceProperties balance;
     private final RouteService routeService;
+    private final WeatherModifierService weatherModifierService;
 
-    public List<AvailableActionDto> computeAvailableActions(GameSessionEntity session, boolean hasLoseActionPending) {
+    public List<AvailableActionDto> computeAvailableActions(
+            GameSessionEntity session,
+            boolean hasLoseActionPending,
+            WeatherSnapshot weather
+    ) {
         // 1. Forced-rest events replace the normal action menu with the only legal choice for this turn.
         if (hasLoseActionPending) {
             return List.of(baseAction(ActionType.SKIP, 0, 0, 0, false, false, null, null));
@@ -41,7 +48,8 @@ public class ActionAffordabilityService {
 
         // 3. Add each action whose resource gates and route constraints are satisfied right now.
         boolean hasRouteOptions = !routeService.getAvailableNextLocations(session.getCurrentLocation()).isEmpty();
-        if (hasRouteOptions && session.getCoffee() >= travel.coffeeCost()) {
+        AvailableActionDto.WeatherSurcharge travelSurcharge = weatherModifierService.computeTravelSurcharge(weather.bucket());
+        if (hasRouteOptions && session.getCoffee() >= travel.coffeeCost() + travelSurcharge.coffeeAdded()) {
             actions.add(baseAction(
                     ActionType.TRAVEL,
                     travel.cashCost(),
@@ -50,7 +58,8 @@ public class ActionAffordabilityService {
                     true,
                     false,
                     null,
-                    null
+                    null,
+                    travelSurcharge
             ));
         }
 
@@ -124,7 +133,12 @@ public class ActionAffordabilityService {
         return List.copyOf(actions);
     }
 
-    public void validateActionLegal(GameSessionEntity session, ActionType type, boolean hasLoseActionPending) {
+    public void validateActionLegal(
+            GameSessionEntity session,
+            ActionType type,
+            boolean hasLoseActionPending,
+            WeatherSnapshot weather
+    ) {
         if (type == ActionType.SKIP && !hasLoseActionPending) {
             throw new GameConflictException("SKIP is only legal when a forced-rest event is pending");
         }
@@ -132,7 +146,7 @@ public class ActionAffordabilityService {
             throw new GameConflictException("Burnout Wave forces SKIP this turn");
         }
 
-        boolean available = computeAvailableActions(session, hasLoseActionPending).stream()
+        boolean available = computeAvailableActions(session, hasLoseActionPending, weather).stream()
                 .anyMatch(action -> action.type() == type);
         if (!available) {
             throw new DomainValidationException("Action is not currently available: " + type);
@@ -149,12 +163,36 @@ public class ActionAffordabilityService {
             Integer minAmount,
             Integer maxAmount
     ) {
+        return baseAction(
+                type,
+                cashCost,
+                coffeeCost,
+                moraleCost,
+                requiresDestination,
+                requiresAmount,
+                minAmount,
+                maxAmount,
+                ZERO_WEATHER_SURCHARGE
+        );
+    }
+
+    private static AvailableActionDto baseAction(
+            ActionType type,
+            int cashCost,
+            int coffeeCost,
+            int moraleCost,
+            boolean requiresDestination,
+            boolean requiresAmount,
+            Integer minAmount,
+            Integer maxAmount,
+            AvailableActionDto.WeatherSurcharge weatherSurcharge
+    ) {
         return new AvailableActionDto(
                 type,
                 cashCost,
                 coffeeCost,
                 moraleCost,
-                ZERO_WEATHER_SURCHARGE,
+                weatherSurcharge,
                 requiresDestination,
                 requiresAmount,
                 minAmount,

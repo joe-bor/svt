@@ -74,3 +74,6 @@ game:
     thresholds:
       cash-bankrupt: -5000
       terminal-location-id: 10
+  integration:
+    weather:
+      base-url: https://archive-api.open-meteo.com

@@ -10,6 +10,9 @@ import com.joe_bor.svt_api.services.economy.PassiveDrainService;
 import com.joe_bor.svt_api.services.game.GameSessionService;
 import com.joe_bor.svt_api.services.game.WinLossEvaluator;
 import com.joe_bor.svt_api.services.route.RouteService;
+import com.joe_bor.svt_api.services.weather.WeatherModifierService;
+import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
+import com.joe_bor.svt_api.services.weather.WeatherTimelineService;
 import com.joe_bor.svt_api.services.turn.EventEffectApplier;
 import com.joe_bor.svt_api.services.turn.PendingEventService;
 import java.util.ArrayList;
@@ -24,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ActionService {
 
-    private static final TurnResolutionSummaryDto.StatDeltas ZERO_STAT_DELTAS =
-            new TurnResolutionSummaryDto.StatDeltas(0, 0, 0, 0);
+    private static final TurnResolutionSummaryDto.TemperatureModifier ZERO_TEMPERATURE_MODIFIER =
+            new TurnResolutionSummaryDto.TemperatureModifier(0, 0);
 
     private final GameSessionService gameSessionService;
     private final PendingEventService pendingEventService;
@@ -37,11 +40,18 @@ public class ActionService {
     private final EventEffectApplier eventEffectApplier;
     private final WinLossEvaluator winLossEvaluator;
     private final RouteService routeService;
+    private final WeatherTimelineService weatherTimelineService;
+    private final WeatherModifierService weatherModifierService;
 
     @Transactional
     public GameStateDto resolveAction(UUID gameId, SubmitActionRequest request) {
         var session = gameSessionService.getGameSession(gameId);
         List<EventEntity> pendingEvents = pendingEventService.loadPendingEventEntities(session.getPendingEventIds());
+        WeatherSnapshot weather = weatherTimelineService.getWeather(
+                session.getCurrentLocation().getLatitude(),
+                session.getCurrentLocation().getLongitude(),
+                session.getCurrentGameDate()
+        );
 
         // 1. Validate the submitted turn package.
         ActionSubmissionValidator.ValidatedActionSubmission validated =
@@ -75,11 +85,15 @@ public class ActionService {
         // Passive systems tick after events so they reflect any turn-opening fallout before the player acts.
         int cashFromEconomy = economyService.applyPassiveEconomy(session);
         Integer cryptoSettlement = normalizeNullable(economyService.applyCryptoSettlement(session));
-        int coffeeDecay = passiveDrainService.applyCoffeeDecay(session);
+        int coffeeDecay = passiveDrainService.applyCoffeeDecay(session, weather.bucket());
+        TurnResolutionSummaryDto.TemperatureModifier temperatureModifier = applyTemperatureModifier(
+                session,
+                weatherModifierService.computeTemperatureModifier(weather.temperatureBracket())
+        );
         TurnResolutionSummaryDto.PassiveDeltas passiveDeltas = new TurnResolutionSummaryDto.PassiveDeltas(
                 cashFromEconomy,
                 coffeeDecay,
-                ZERO_STAT_DELTAS,
+                temperatureModifier,
                 cryptoSettlement
         );
 
@@ -87,14 +101,16 @@ public class ActionService {
         actionAffordabilityService.validateActionLegal(
                 session,
                 request.action().type(),
-                validated.hasLoseActionPending()
+                validated.hasLoseActionPending(),
+                weather
         );
 
         // 4. Execute one player action.
         TurnResolutionSummaryDto.ActionResolutionDetail actionResolution = actionEffectService.applyAction(
                 session,
                 request.action(),
-                routeService.getAvailableNextLocations(session.getCurrentLocation())
+                routeService.getAvailableNextLocations(session.getCurrentLocation()),
+                weather
         );
 
         // 5. Evaluate win/loss and return the updated state.
@@ -113,5 +129,19 @@ public class ActionService {
     // Keeps "no settlement happened" distinct from "a zero-dollar settlement happened" in the response DTO.
     private static Integer normalizeNullable(int value) {
         return value == 0 ? null : value;
+    }
+
+    private static TurnResolutionSummaryDto.TemperatureModifier applyTemperatureModifier(
+            com.joe_bor.svt_api.models.session.GameSessionEntity session,
+            TurnResolutionSummaryDto.TemperatureModifier modifier
+    ) {
+        int startingMorale = session.getMorale();
+        int startingCoffee = session.getCoffee();
+        session.setMorale(Math.max(0, Math.min(100, session.getMorale() + modifier.morale())));
+        session.setCoffee(Math.max(0, session.getCoffee() + modifier.coffee()));
+        return new TurnResolutionSummaryDto.TemperatureModifier(
+                session.getMorale() - startingMorale,
+                session.getCoffee() - startingCoffee
+        );
     }
 }

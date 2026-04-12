@@ -8,6 +8,8 @@ import com.joe_bor.svt_api.controllers.game.dto.AvailableNextLocationDto;
 import com.joe_bor.svt_api.models.gameplay.ActionType;
 import com.joe_bor.svt_api.models.session.GameSessionEntity;
 import com.joe_bor.svt_api.services.random.RandomProvider;
+import com.joe_bor.svt_api.services.weather.WeatherModifierService;
+import com.joe_bor.svt_api.services.weather.WeatherSnapshot;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,35 +20,51 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ActionEffectService {
 
-    private static final TurnResolutionSummaryDto.StatDeltas ZERO_STAT_DELTAS =
-            new TurnResolutionSummaryDto.StatDeltas(0, 0, 0, 0);
+    private static final TurnResolutionSummaryDto.WeatherSurcharges ZERO_WEATHER_SURCHARGES =
+            new TurnResolutionSummaryDto.WeatherSurcharges(0);
 
     private final GameBalanceProperties balance;
     private final LocationProgressionService locationProgressionService;
     private final RandomProvider randomProvider;
+    private final WeatherModifierService weatherModifierService;
 
     @Transactional
     public TurnResolutionSummaryDto.ActionResolutionDetail applyAction(
             GameSessionEntity session,
             SubmitActionRequest.ActionPayload action,
-            List<AvailableNextLocationDto> legalDestinations
+            List<AvailableNextLocationDto> legalDestinations,
+            WeatherSnapshot weather
     ) {
         // 1. Capture the visible pre-action state so the response can report only this action's delta.
         VisibleStatsSnapshot before = VisibleStatsSnapshot.capture(session);
         Long destinationLocationId = null;
         String detourBonusApplied = null;
         List<String> notes = List.of();
+        TurnResolutionSummaryDto.WeatherSurcharges weatherSurcharges = ZERO_WEATHER_SURCHARGES;
 
         // 2. Apply the chosen action's game rule.
         switch (action.type()) {
             case TRAVEL -> {
+                var surcharge = weatherModifierService.computeTravelSurcharge(weather.bucket());
+                if (surcharge.coffeeAdded() != 0) {
+                    session.setCoffee(session.getCoffee() - surcharge.coffeeAdded());
+                }
                 LocationProgressionService.TravelOutcome outcome = locationProgressionService.travel(
                         session,
                         action.destinationLocationId(),
                         legalDestinations
                 );
+                WeatherModifierService.StormyTravelPenalty stormyTravelPenalty =
+                        weatherModifierService.computeStormyTravelPenalty(weather.bucket());
+                if (stormyTravelPenalty.cash() != 0) {
+                    session.setCash(session.getCash() + stormyTravelPenalty.cash());
+                }
+                if (stormyTravelPenalty.morale() != 0) {
+                    session.setMorale(session.getMorale() + stormyTravelPenalty.morale());
+                }
                 destinationLocationId = outcome.destinationLocationId();
                 detourBonusApplied = outcome.detourBonusApplied();
+                weatherSurcharges = new TurnResolutionSummaryDto.WeatherSurcharges(surcharge.coffeeAdded());
             }
             case REST -> {
                 session.setMorale(session.getMorale() + balance.actionCosts().rest().moraleGain());
@@ -107,7 +125,7 @@ public class ActionEffectService {
                 after.morale() - before.morale(),
                 after.customers() - before.customers(),
                 destinationLocationId,
-                ZERO_STAT_DELTAS,
+                weatherSurcharges,
                 detourBonusApplied,
                 notes
         );
