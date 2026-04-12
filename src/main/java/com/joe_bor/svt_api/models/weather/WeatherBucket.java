@@ -6,6 +6,7 @@ public enum WeatherBucket {
     RAINY,
     STORMY;
 
+    //    https://open-meteo.com/en/docs#weather_variable_documentation
     public static WeatherBucket fromWmoCode(int weatherCode) {
         if (weatherCode >= 0 && weatherCode <= 1) {
             return CLEAR;
