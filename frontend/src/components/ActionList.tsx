@@ -159,7 +159,7 @@ export default function ActionList({ actions, nextLocations, onSubmit }: Props) 
 
 function InvestInput({ min, max, onSubmit }: { min: number; max: number; onSubmit: (amount: number) => void }) {
   const [amount, setAmount] = useState(min);
-  const valid = amount >= min && amount <= max;
+  const valid = Number.isInteger(amount) && amount >= min && amount <= max;
   return (
     <div className="bg-white/[0.06] border border-white/10 rounded-md p-2 flex flex-col gap-1">
       <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-medium tabular-nums">Invest amount (${min} – ${max})</div>
@@ -167,6 +167,7 @@ function InvestInput({ min, max, onSubmit }: { min: number; max: number; onSubmi
         type="number"
         min={min}
         max={max}
+        step={1}
         value={amount}
         onChange={(e) => setAmount(Number(e.target.value))}
         className="px-2 py-1 rounded bg-white/[0.08] border border-white/15 text-xs"
