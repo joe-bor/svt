@@ -3,41 +3,57 @@ import ActionList from './ActionList';
 import EventCard from './EventCard';
 import MapColumn from './MapColumn';
 import StatsPanel from './StatsPanel';
+import TurnRecapCard from './TurnRecapCard';
 import WeatherBadge from './WeatherBadge';
 
 export default function GameScreen({ game }: { game: UseGame }) {
   const s = game.state!;
   return (
-    <div className="h-screen flex flex-col p-3 gap-2">
+    <div className="h-screen flex flex-col p-4 gap-3">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-white/[0.06] rounded-lg text-xs">
-        <span className="font-bold tracking-widest">SILICON VALLEY TRAIL</span>
-        <div className="flex gap-3 items-center text-white/40">
-          <span>Turn <span className="text-accent-teal font-bold">{s.currentTurn}</span></span>
+      <div className="flex items-center justify-between px-4 py-3 bg-white/[0.06] rounded-lg text-sm">
+        <span className="font-display italic text-2xl leading-none">Silicon Valley Trail</span>
+        <div className="flex gap-4 items-center text-white/50 tabular-nums">
+          <span>Turn <span className="text-accent-teal font-semibold">{s.currentTurn}</span></span>
           <span>{s.currentGameDate}</span>
           <WeatherBadge weather={s.weather} />
         </div>
       </div>
 
       {/* Main: left panel + map column */}
-      <div className="flex gap-2 flex-1 min-h-0">
+      <div className="flex gap-3 flex-1 min-h-0">
         {/* Left panel */}
-        <div className="flex-[1.4] flex flex-col gap-2 min-h-0">
+        <div className="flex-[1.3] flex flex-col gap-3 min-h-0">
           <StatsPanel stats={s.stats} />
 
-          {game.phase === 'EVENT' ? (
-            <EventCard
-              events={s.pendingEvents}
-              stepIndex={game.stepIndex}
-              onPickChoice={game.pickChoice}
-              onAdvanceNoChoice={game.advanceNoChoiceEvent}
-            />
+          {/* Event/action region — bounded height keeps the event card compact */}
+          <section className="h-[44%] min-h-0 flex flex-col">
+            {game.phase === 'EVENT' ? (
+              <div key="event-phase" className="flex-1 min-h-0 flex flex-col animate-fade-in">
+                <EventCard
+                  events={s.pendingEvents}
+                  pendingChoices={game.pendingChoices}
+                  acknowledgedEventIds={game.acknowledgedEventIds}
+                  onPickChoice={game.pickChoice}
+                  onAcknowledge={game.acknowledgeEvent}
+                />
+              </div>
+            ) : (
+              <div key="action-phase" className="flex-1 min-h-0 flex flex-col animate-fade-in">
+                <ActionList
+                  actions={s.availableActions}
+                  nextLocations={s.availableNextLocations}
+                  onSubmit={game.submitAction}
+                />
+              </div>
+            )}
+          </section>
+
+          {/* Last-turn recap — fills the lower panel when a prior resolution exists */}
+          {game.phase === 'EVENT' && s.lastResolution ? (
+            <TurnRecapCard summary={s.lastResolution} />
           ) : (
-            <ActionList
-              actions={s.availableActions}
-              nextLocations={s.availableNextLocations}
-              onSubmit={game.submitAction}
-            />
+            <div className="flex-1" />
           )}
         </div>
 
