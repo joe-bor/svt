@@ -1,4 +1,5 @@
 import type { UseGame } from '../hooks/useGame';
+import ActionList from './ActionList';
 import EventCard from './EventCard';
 import MapColumn from './MapColumn';
 import StatsPanel from './StatsPanel';
@@ -32,9 +33,11 @@ export default function GameScreen({ game }: { game: UseGame }) {
               onAdvanceNoChoice={game.advanceNoChoiceEvent}
             />
           ) : (
-            <div className="flex-1 bg-white/[0.03] border border-dashed border-white/10 rounded-lg p-3 flex items-center justify-center text-white/40 text-sm min-h-0">
-              Action list coming soon
-            </div>
+            <ActionList
+              actions={s.availableActions}
+              nextLocations={s.availableNextLocations}
+              onSubmit={game.submitAction}
+            />
           )}
         </div>
 
