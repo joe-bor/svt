@@ -1,4 +1,5 @@
 import type { UseGame } from '../hooks/useGame';
+import EventCard from './EventCard';
 import MapColumn from './MapColumn';
 import StatsPanel from './StatsPanel';
 import WeatherBadge from './WeatherBadge';
@@ -23,9 +24,18 @@ export default function GameScreen({ game }: { game: UseGame }) {
         <div className="flex-[1.4] flex flex-col gap-2 min-h-0">
           <StatsPanel stats={s.stats} />
 
-          <div className="flex-1 bg-white/[0.03] border border-dashed border-white/10 rounded-lg p-3 flex items-center justify-center text-white/40 text-sm min-h-0">
-            {game.phase === 'EVENT' ? 'Events panel coming soon' : 'Action list coming soon'}
-          </div>
+          {game.phase === 'EVENT' ? (
+            <EventCard
+              events={s.pendingEvents}
+              stepIndex={game.stepIndex}
+              onPickChoice={game.pickChoice}
+              onAdvanceNoChoice={game.advanceNoChoiceEvent}
+            />
+          ) : (
+            <div className="flex-1 bg-white/[0.03] border border-dashed border-white/10 rounded-lg p-3 flex items-center justify-center text-white/40 text-sm min-h-0">
+              Action list coming soon
+            </div>
+          )}
         </div>
 
         {/* Right column (map) */}
