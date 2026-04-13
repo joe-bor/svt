@@ -1,4 +1,5 @@
 import type { UseGame } from '../hooks/useGame';
+import MapColumn from './MapColumn';
 import StatsPanel from './StatsPanel';
 import WeatherBadge from './WeatherBadge';
 
@@ -27,10 +28,8 @@ export default function GameScreen({ game }: { game: UseGame }) {
           </div>
         </div>
 
-        {/* Right column (map placeholder) */}
-        <div className="w-40 bg-white/[0.04] rounded-lg p-3 text-white/40 text-xs">
-          Map column coming soon
-        </div>
+        {/* Right column (map) */}
+        <MapColumn locations={game.locations} currentLocationId={s.currentLocation.id} />
       </div>
     </div>
   );
