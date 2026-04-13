@@ -1,5 +1,6 @@
 import { useGame } from './hooks/useGame';
 import HomeScreen from './components/HomeScreen';
+import GameScreen from './components/GameScreen';
 
 export default function App() {
   const game = useGame();
@@ -20,6 +21,9 @@ export default function App() {
         Game over — screen coming soon
       </div>
     );
+  }
+  if (game.phase === 'EVENT' || game.phase === 'ACTION') {
+    return <GameScreen game={game} />;
   }
   return (
     <div className="h-screen flex items-center justify-center text-white/80">
