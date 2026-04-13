@@ -1,3 +1,4 @@
+import { Skull, Trophy } from 'lucide-react';
 import type { GameStateDto } from '../api/types';
 
 const messages: Record<string, string> = {
@@ -14,16 +15,27 @@ export default function GameOverScreen({ state, onPlayAgain }: { state: GameStat
   const reason = state.gameEndReason ?? 'UNKNOWN';
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-3 p-8">
-      <div className="text-5xl">{won ? '🏆' : '💀'}</div>
-      <div className={`text-2xl font-extrabold ${won ? 'text-accent-teal' : 'text-accent-red'}`}>
+      <div className="animate-scale-in" style={{ animationDelay: '40ms' }}>
+        {won
+          ? <Trophy size={80} className="text-accent-teal" />
+          : <Skull size={80} className="text-accent-red" />}
+      </div>
+      <div
+        className={`font-display italic text-4xl leading-tight text-center max-w-xl animate-fade-in-up ${won ? 'text-accent-teal' : 'text-accent-red'}`}
+        style={{ animationDelay: '220ms' }}
+      >
         {messages[reason] ?? reason}
       </div>
-      <div className="text-white/50 text-xs">
+      <div
+        className="text-white/50 text-xs tabular-nums tracking-wide animate-fade-in"
+        style={{ animationDelay: '420ms' }}
+      >
         {reason} · {state.currentTurn} turns · ${state.stats.cash.toLocaleString()} remaining
       </div>
       <button
         onClick={onPlayAgain}
-        className="mt-2 px-5 py-2 rounded-lg text-sm bg-white/[0.10] border border-white/20 hover:bg-white/[0.15]"
+        className="mt-2 px-5 py-2 rounded-lg text-sm font-medium bg-white/[0.10] border border-white/20 hover:bg-white/[0.15] transition duration-200 ease-out-quart active:scale-[0.97] animate-fade-in-up"
+        style={{ animationDelay: '600ms' }}
       >
         Play Again
       </button>

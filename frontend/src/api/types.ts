@@ -119,10 +119,60 @@ export interface AvailableNextLocationDto {
   detourBonusValue: number | null;
 }
 
+// TurnResolutionSummaryDto — mirrors the Java record per contract §5.9.
+export interface StatDeltas {
+  cash: number;
+  customers: number;
+  morale: number;
+  coffee: number;
+}
+
+export interface EventResolutionDetail {
+  eventId: number;
+  choiceId: number | null;
+  statDeltas: StatDeltas;
+  triggeredGameOver: boolean;
+  dynamicNote: string | null;
+}
+
+export interface TemperatureModifier {
+  morale: number;
+  coffee: number;
+}
+
+export interface PassiveDeltas {
+  cashFromEconomy: number;
+  coffeeDecay: number;
+  temperatureModifier: TemperatureModifier;
+  cryptoSettlementCredited: number | null;
+}
+
+export interface WeatherSurcharges {
+  coffee: number;
+}
+
+export interface ActionResolutionDetail {
+  actionType: ActionType;
+  cashDelta: number;
+  coffeeDelta: number;
+  moraleDelta: number;
+  customersDelta: number;
+  destinationLocationId: number | null;
+  weatherSurcharges: WeatherSurcharges;
+  detourBonusApplied: string | null;
+  notes: string[];
+}
+
+export interface WinLossResult {
+  ended: boolean;
+  reason: GameEndReason | null;
+}
+
 export interface TurnResolutionSummaryDto {
-  // shape per contract §5.9 — we only need to know it exists to type the field
-  // render is optional polish; leave the field typed as `unknown` to avoid over-committing
-  [key: string]: unknown;
+  eventResolutions: EventResolutionDetail[];
+  passiveDeltas: PassiveDeltas;
+  actionResolution: ActionResolutionDetail;
+  winLoss: WinLossResult;
 }
 
 export interface GameStateDto {
