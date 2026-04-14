@@ -6,6 +6,7 @@ This repo contains the Spring Boot backend that owns the game loop, persistence,
 
 ## Start Here
 
+**Live URL:** [https://svt.joe-bor.me](https://svt.joe-bor.me)
 - [Quick Start](#quick-start)
 - Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - Postman collection: [postman/collections/svt-api.collection.json](postman/collections/svt-api.collection.json)
