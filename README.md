@@ -225,10 +225,10 @@ The persistence layer makes the run state real instead of keeping everything in 
 ## Further Reading
 
 - Full design rationale: [docs/decisions.md](docs/decisions.md)
-- Map and routes: [docs/diagrams/map-and-routes.svg](docs/diagrams/map-and-routes.svg)
-- Economy system: [docs/diagrams/economy-system.svg](docs/diagrams/economy-system.svg)
-- Event system: [docs/diagrams/event-system.svg](docs/diagrams/event-system.svg)
-- Balance overview: [docs/diagrams/balance-overview.svg](docs/diagrams/balance-overview.svg)
+- Map and routes: [docs/decisions.md#map--movement](docs/decisions.md#map--movement)
+- Economy system: [docs/decisions.md#stats--economy](docs/decisions.md#stats--economy)
+- Event system: [docs/decisions.md#events](docs/decisions.md#events)
+- Balance overview: [docs/decisions.md#core-game-loop](docs/decisions.md#core-game-loop)
 
 ## AI Usage
 

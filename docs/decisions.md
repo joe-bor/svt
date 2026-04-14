@@ -9,7 +9,6 @@
 
 ## Table of Contents
 
-- [Visual Overview](#visual-overview)
 - [Core Game Loop](#core-game-loop)
 - [Resource-based pacing over a hard turn limit](#resource-based-pacing-over-a-hard-turn-limit)
 - [Multiple simultaneous losing conditions](#multiple-simultaneous-losing-conditions)
@@ -48,53 +47,11 @@
 - [Game-over reason captured as a typed enum](#game-over-reason-captured-as-a-typed-enum)
 - [Crypto settlement pre-computed on invest turn, applied on resolve turn](#crypto-settlement-pre-computed-on-invest-turn-applied-on-resolve-turn)
 
-## Visual Overview
-
-These diagrams are the reviewer-facing visual summary. The `.excalidraw` files in `diagrams/` remain the editable source.
-
-### Turn Flow
+## Core Game Loop
 
 ![Turn Flow](diagrams/turn-flow.svg)
 
 Editable source: [turn-flow.excalidraw](diagrams/turn-flow.excalidraw)
-
-### Map & Routes
-
-![Map & Routes](diagrams/map-and-routes.svg)
-
-Editable source: [map-and-routes.excalidraw](diagrams/map-and-routes.excalidraw)
-
-### Economy System
-
-![Economy System](diagrams/economy-system.svg)
-
-Editable source: [economy-system.excalidraw](diagrams/economy-system.excalidraw)
-
-### Event System
-
-![Event System](diagrams/event-system.svg)
-
-Editable source: [event-system.excalidraw](diagrams/event-system.excalidraw)
-
-### API Integration & Timeline
-
-![API Integration & Timeline](diagrams/api-timeline.svg)
-
-Editable source: [api-timeline.excalidraw](diagrams/api-timeline.excalidraw)
-
-### Architecture
-
-![Architecture](diagrams/architecture.svg)
-
-Editable source: [architecture.excalidraw](diagrams/architecture.excalidraw)
-
-### Balance Overview
-
-![Balance Overview](diagrams/balance-overview.svg)
-
-Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalidraw)
-
-## Core Game Loop
 
 ### Resource-based pacing over a hard turn limit
 
@@ -126,6 +83,14 @@ Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalid
 
 ## Stats & Economy
 
+![Economy System](diagrams/economy-system.svg)
+
+Editable source: [economy-system.excalidraw](diagrams/economy-system.excalidraw)
+
+![Balance Overview](diagrams/balance-overview.svg)
+
+Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalidraw)
+
 ### 4 visible stats, 1 hidden accumulator
 
 **Context:** The prompt requires a minimum of 3 stats and provides a list of examples. The specific stats are left to us to decide  
@@ -155,6 +120,10 @@ Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalid
 **Trade-off accepted:** Two interdependent stats add a layer of indirection. The relationship between customers and cash needs to be clearly communicated in the UI or players will not understand why their cash is changing
 
 ## Map & Movement
+
+![Map & Routes](diagrams/map-and-routes.svg)
+
+Editable source: [map-and-routes.excalidraw](diagrams/map-and-routes.excalidraw)
 
 ### Branching paths over linear map
 
@@ -236,6 +205,10 @@ Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalid
 
 ## Events
 
+![Event System](diagrams/event-system.svg)
+
+Editable source: [event-system.excalidraw](diagrams/event-system.excalidraw)
+
 ### Multiple events per turn, positive and negative
 
 **Context:** The prompt says "an event should happen at each location", singular, and does not clarify whether multiple can stack or whether events are limited to travel turns only  
@@ -255,6 +228,10 @@ Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalid
 **Trade-off accepted:** Edge-triggering means a player sitting at Morale = 20 for five turns only gets hit once, which is more forgiving. The conditional becomes a wake-up call rather than a sustained punishment
 
 ## API Integration
+
+![API Integration & Timeline](diagrams/api-timeline.svg)
+
+Editable source: [api-timeline.excalidraw](diagrams/api-timeline.excalidraw)
 
 ### Two API integrations: weather (event-driven) and crypto (action-driven)
 
@@ -305,6 +282,10 @@ Editable source: [balance-overview.excalidraw](diagrams/balance-overview.excalid
 **Trade-off accepted:** Two overlapping weather systems add cognitive load for the player. A stormy cold day stacks penalties from both systems which could feel excessive. Mitigated by keeping individual modifiers small (the exact numbers are tunable) and making the normal weather band wide (50-85°F) so most turns have minimal temperature effects
 
 ## Tech Stack & Architecture
+
+![Architecture](diagrams/architecture.svg)
+
+Editable source: [architecture.excalidraw](diagrams/architecture.excalidraw)
 
 ### REST API over CLI for game interface
 
