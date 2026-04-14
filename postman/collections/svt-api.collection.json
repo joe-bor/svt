@@ -1,0 +1,598 @@
+{
+  "info": {
+    "_postman_id": "623c2f05-0461-4162-ab34-451ac3b2750a",
+    "name": "SiliconValleyTrail",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27532224"
+  },
+  "item": [
+    {
+      "name": "api",
+      "item": [
+        {
+          "name": "test",
+          "item": [
+            {
+              "name": "test",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/test",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "test"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/test",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "test"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "Text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": \"<string>\",\n  \"environment\": \"<string>\",\n  \"timestamp\": \"<dateTime>\",\n  \"activeProfiles\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "catalog",
+          "item": [
+            {
+              "name": "locations",
+              "item": [
+                {
+                  "name": "get Locations",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/catalog/locations",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "catalog",
+                        "locations"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "OK",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/catalog/locations",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "catalog",
+                            "locations"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "Text",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "[\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  },\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  }\n]"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "events",
+              "item": [
+                {
+                  "name": "get Events",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/catalog/events",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "catalog",
+                        "events"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "OK",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/catalog/events",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "catalog",
+                            "events"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "Text",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "[\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"eventType\": \"<string>\",\n    \"locationId\": \"<long>\",\n    \"hasChoice\": \"<boolean>\",\n    \"autoCashEffect\": \"<integer>\",\n    \"autoCustomersEffect\": \"<integer>\",\n    \"autoMoraleEffect\": \"<integer>\",\n    \"autoCoffeeEffect\": \"<integer>\",\n    \"autoBugsEffect\": \"<integer>\",\n    \"specialEffect\": \"<string>\",\n    \"choices\": [\n      {\n        \"id\": \"<long>\",\n        \"label\": \"<string>\",\n        \"cashEffect\": \"<integer>\",\n        \"customersEffect\": \"<integer>\",\n        \"moraleEffect\": \"<integer>\",\n        \"coffeeEffect\": \"<integer>\",\n        \"bugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\"\n      },\n      {\n        \"id\": \"<long>\",\n        \"label\": \"<string>\",\n        \"cashEffect\": \"<integer>\",\n        \"customersEffect\": \"<integer>\",\n        \"moraleEffect\": \"<integer>\",\n        \"coffeeEffect\": \"<integer>\",\n        \"bugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\"\n      }\n    ]\n  },\n  {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"eventType\": \"<string>\",\n    \"locationId\": \"<long>\",\n    \"hasChoice\": \"<boolean>\",\n    \"autoCashEffect\": \"<integer>\",\n    \"autoCustomersEffect\": \"<integer>\",\n    \"autoMoraleEffect\": \"<integer>\",\n    \"autoCoffeeEffect\": \"<integer>\",\n    \"autoBugsEffect\": \"<integer>\",\n    \"specialEffect\": \"<string>\",\n    \"choices\": [\n      {\n        \"id\": \"<long>\",\n        \"label\": \"<string>\",\n        \"cashEffect\": \"<integer>\",\n        \"customersEffect\": \"<integer>\",\n        \"moraleEffect\": \"<integer>\",\n        \"coffeeEffect\": \"<integer>\",\n        \"bugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\"\n      },\n      {\n        \"id\": \"<long>\",\n        \"label\": \"<string>\",\n        \"cashEffect\": \"<integer>\",\n        \"customersEffect\": \"<integer>\",\n        \"moraleEffect\": \"<integer>\",\n        \"coffeeEffect\": \"<integer>\",\n        \"bugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\"\n      }\n    ]\n  }\n]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "games",
+          "item": [
+            {
+              "name": "{id}",
+              "item": [
+                {
+                  "name": "turns",
+                  "item": [
+                    {
+                      "name": "next",
+                      "item": [
+                        {
+                          "name": "advance Turn",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "*/*"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/games/:id/turns/next",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "games",
+                                ":id",
+                                "turns",
+                                "next"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "{{gameId}}"
+                                }
+                              ]
+                            }
+                          },
+                          "response": [
+                            {
+                              "name": "OK",
+                              "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                  {
+                                    "key": "Accept",
+                                    "value": "*/*"
+                                  }
+                                ],
+                                "url": {
+                                  "raw": "{{baseUrl}}/api/games/:id/turns/next",
+                                  "host": [
+                                    "{{baseUrl}}"
+                                  ],
+                                  "path": [
+                                    "api",
+                                    "games",
+                                    ":id",
+                                    "turns",
+                                    "next"
+                                  ],
+                                  "variable": [
+                                    {
+                                      "key": "id",
+                                      "value": "<uuid>"
+                                    }
+                                  ]
+                                }
+                              },
+                              "status": "OK",
+                              "code": 200,
+                              "_postman_previewlanguage": "Text",
+                              "header": [
+                                {
+                                  "key": "Content-Type",
+                                  "value": "*/*"
+                                }
+                              ],
+                              "cookie": [],
+                              "body": "{\n  \"id\": \"<uuid>\",\n  \"status\": \"IN_PROGRESS\",\n  \"gameEndReason\": \"TOOK_LINKEDIN_JOB\",\n  \"gameStartDate\": \"<date>\",\n  \"currentGameDate\": \"<date>\",\n  \"currentTurn\": \"<integer>\",\n  \"currentLocation\": {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  },\n  \"stats\": {\n    \"cash\": \"<integer>\",\n    \"customers\": \"<integer>\",\n    \"morale\": \"<integer>\",\n    \"coffee\": \"<integer>\"\n  },\n  \"pendingCryptoSettlement\": \"<integer>\",\n  \"linkedinBonusActive\": \"<boolean>\",\n  \"weather\": {\n    \"weatherCode\": \"<integer>\",\n    \"bucket\": \"RAINY\",\n    \"apparentTemperatureMaxF\": \"<double>\",\n    \"temperatureBracket\": \"HOT\",\n    \"fallback\": \"<boolean>\"\n  },\n  \"pendingEvents\": [\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    },\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    }\n  ],\n  \"availableActions\": [\n    {\n      \"type\": \"INVEST_CRYPTO\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    },\n    {\n      \"type\": \"TRAVEL\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    }\n  ],\n  \"availableNextLocations\": [\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    },\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    }\n  ],\n  \"lastResolution\": {\n    \"eventResolutions\": [\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      },\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      }\n    ],\n    \"passiveDeltas\": {\n      \"cashFromEconomy\": \"<integer>\",\n      \"coffeeDecay\": \"<integer>\",\n      \"temperatureModifier\": {\n        \"morale\": \"<integer>\",\n        \"coffee\": \"<integer>\"\n      },\n      \"cryptoSettlementCredited\": \"<integer>\"\n    },\n    \"actionResolution\": {\n      \"actionType\": \"MARKETING\",\n      \"cashDelta\": \"<integer>\",\n      \"coffeeDelta\": \"<integer>\",\n      \"moraleDelta\": \"<integer>\",\n      \"customersDelta\": \"<integer>\",\n      \"destinationLocationId\": \"<long>\",\n      \"weatherSurcharges\": {\n        \"coffee\": \"<integer>\"\n      },\n      \"detourBonusApplied\": \"<string>\",\n      \"notes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"winLoss\": {\n      \"ended\": \"<boolean>\",\n      \"reason\": \"ACQUIRED\"\n    }\n  }\n}"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "advance Turn",
+                          "request": {
+                            "auth": {
+                              "type": "noauth"
+                            },
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "*/*"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/api/games/:id/turns/next",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "games",
+                                ":id",
+                                "turns",
+                                "next"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "{{gameId}}"
+                                }
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "actions",
+                  "item": [
+                    {
+                      "name": "submit Action",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"action\": {\n    \"type\": \"TRAVEL\",\n    \"destinationLocationId\": \"<long>\",\n    \"amount\": \"<integer>\"\n  },\n  \"eventChoices\": [\n    {\n      \"choiceId\": \"<long>\",\n      \"eventId\": \"<long>\"\n    },\n    {\n      \"choiceId\": \"<long>\",\n      \"eventId\": \"<long>\"\n    }\n  ]\n}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/games/:id/actions",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "games",
+                            ":id",
+                            "actions"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "{{gameId}}"
+                            }
+                          ]
+                        }
+                      },
+                      "response": [
+                        {
+                          "name": "OK",
+                          "originalRequest": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "*/*"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"action\": {\n    \"type\": \"TRAVEL\",\n    \"destinationLocationId\": \"<long>\",\n    \"amount\": \"<integer>\"\n  },\n  \"eventChoices\": [\n    {\n      \"choiceId\": \"<long>\",\n      \"eventId\": \"<long>\"\n    },\n    {\n      \"choiceId\": \"<long>\",\n      \"eventId\": \"<long>\"\n    }\n  ]\n}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/api/games/:id/actions",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "api",
+                                "games",
+                                ":id",
+                                "actions"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "<uuid>"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "Text",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "*/*"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n  \"id\": \"<uuid>\",\n  \"status\": \"IN_PROGRESS\",\n  \"gameEndReason\": \"TOOK_LINKEDIN_JOB\",\n  \"gameStartDate\": \"<date>\",\n  \"currentGameDate\": \"<date>\",\n  \"currentTurn\": \"<integer>\",\n  \"currentLocation\": {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  },\n  \"stats\": {\n    \"cash\": \"<integer>\",\n    \"customers\": \"<integer>\",\n    \"morale\": \"<integer>\",\n    \"coffee\": \"<integer>\"\n  },\n  \"pendingCryptoSettlement\": \"<integer>\",\n  \"linkedinBonusActive\": \"<boolean>\",\n  \"weather\": {\n    \"weatherCode\": \"<integer>\",\n    \"bucket\": \"RAINY\",\n    \"apparentTemperatureMaxF\": \"<double>\",\n    \"temperatureBracket\": \"HOT\",\n    \"fallback\": \"<boolean>\"\n  },\n  \"pendingEvents\": [\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    },\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    }\n  ],\n  \"availableActions\": [\n    {\n      \"type\": \"INVEST_CRYPTO\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    },\n    {\n      \"type\": \"TRAVEL\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    }\n  ],\n  \"availableNextLocations\": [\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    },\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    }\n  ],\n  \"lastResolution\": {\n    \"eventResolutions\": [\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      },\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      }\n    ],\n    \"passiveDeltas\": {\n      \"cashFromEconomy\": \"<integer>\",\n      \"coffeeDecay\": \"<integer>\",\n      \"temperatureModifier\": {\n        \"morale\": \"<integer>\",\n        \"coffee\": \"<integer>\"\n      },\n      \"cryptoSettlementCredited\": \"<integer>\"\n    },\n    \"actionResolution\": {\n      \"actionType\": \"MARKETING\",\n      \"cashDelta\": \"<integer>\",\n      \"coffeeDelta\": \"<integer>\",\n      \"moraleDelta\": \"<integer>\",\n      \"customersDelta\": \"<integer>\",\n      \"destinationLocationId\": \"<long>\",\n      \"weatherSurcharges\": {\n        \"coffee\": \"<integer>\"\n      },\n      \"detourBonusApplied\": \"<string>\",\n      \"notes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"winLoss\": {\n      \"ended\": \"<boolean>\",\n      \"reason\": \"ACQUIRED\"\n    }\n  }\n}"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "get Game",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/games/:id",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "games",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "<uuid>"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "OK",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/games/:id",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "games",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "<uuid>"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "Text",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"id\": \"<uuid>\",\n  \"status\": \"WON\",\n  \"gameEndReason\": \"CASH_BANKRUPT\",\n  \"gameStartDate\": \"<date>\",\n  \"currentGameDate\": \"<date>\",\n  \"currentTurn\": \"<integer>\",\n  \"currentLocation\": {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  },\n  \"stats\": {\n    \"cash\": \"<integer>\",\n    \"customers\": \"<integer>\",\n    \"morale\": \"<integer>\",\n    \"coffee\": \"<integer>\"\n  },\n  \"pendingCryptoSettlement\": \"<integer>\",\n  \"linkedinBonusActive\": \"<boolean>\",\n  \"weather\": {\n    \"weatherCode\": \"<integer>\",\n    \"bucket\": \"RAINY\",\n    \"apparentTemperatureMaxF\": \"<double>\",\n    \"temperatureBracket\": \"HOT\",\n    \"fallback\": \"<boolean>\"\n  },\n  \"pendingEvents\": [\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    },\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    }\n  ],\n  \"availableActions\": [\n    {\n      \"type\": \"INVEST_CRYPTO\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    },\n    {\n      \"type\": \"TRAVEL\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    }\n  ],\n  \"availableNextLocations\": [\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"routeType\": \"MAIN_ROUTE\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    },\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"routeType\": \"DETOUR\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    }\n  ],\n  \"lastResolution\": {\n    \"eventResolutions\": [\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      },\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      }\n    ],\n    \"passiveDeltas\": {\n      \"cashFromEconomy\": \"<integer>\",\n      \"coffeeDecay\": \"<integer>\",\n      \"temperatureModifier\": {\n        \"morale\": \"<integer>\",\n        \"coffee\": \"<integer>\"\n      },\n      \"cryptoSettlementCredited\": \"<integer>\"\n    },\n    \"actionResolution\": {\n      \"actionType\": \"MARKETING\",\n      \"cashDelta\": \"<integer>\",\n      \"coffeeDelta\": \"<integer>\",\n      \"moraleDelta\": \"<integer>\",\n      \"customersDelta\": \"<integer>\",\n      \"destinationLocationId\": \"<long>\",\n      \"weatherSurcharges\": {\n        \"coffee\": \"<integer>\"\n      },\n      \"detourBonusApplied\": \"<string>\",\n      \"notes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"winLoss\": {\n      \"ended\": \"<boolean>\",\n      \"reason\": \"ACQUIRED\"\n    }\n  }\n}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "create Game",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const json = pm.response.json();",
+                      "pm.collectionVariables.set(\"gameId\", json.id);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/games",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "games"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "OK",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/games",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "games"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "Text",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"id\": \"<uuid>\",\n  \"status\": \"WON\",\n  \"gameEndReason\": \"CASH_BANKRUPT\",\n  \"gameStartDate\": \"<date>\",\n  \"currentGameDate\": \"<date>\",\n  \"currentTurn\": \"<integer>\",\n  \"currentLocation\": {\n    \"id\": \"<long>\",\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"routeOrder\": \"<integer>\",\n    \"detour\": \"<boolean>\",\n    \"branchesFromId\": \"<long>\",\n    \"latitude\": \"<double>\",\n    \"longitude\": \"<double>\",\n    \"detourBonusStat\": \"<string>\",\n    \"detourBonusValue\": \"<integer>\"\n  },\n  \"stats\": {\n    \"cash\": \"<integer>\",\n    \"customers\": \"<integer>\",\n    \"morale\": \"<integer>\",\n    \"coffee\": \"<integer>\"\n  },\n  \"pendingCryptoSettlement\": \"<integer>\",\n  \"linkedinBonusActive\": \"<boolean>\",\n  \"weather\": {\n    \"weatherCode\": \"<integer>\",\n    \"bucket\": \"RAINY\",\n    \"apparentTemperatureMaxF\": \"<double>\",\n    \"temperatureBracket\": \"HOT\",\n    \"fallback\": \"<boolean>\"\n  },\n  \"pendingEvents\": [\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    },\n    {\n      \"rollOrder\": \"<integer>\",\n      \"event\": {\n        \"id\": \"<long>\",\n        \"name\": \"<string>\",\n        \"description\": \"<string>\",\n        \"eventType\": \"<string>\",\n        \"locationId\": \"<long>\",\n        \"hasChoice\": \"<boolean>\",\n        \"autoCashEffect\": \"<integer>\",\n        \"autoCustomersEffect\": \"<integer>\",\n        \"autoMoraleEffect\": \"<integer>\",\n        \"autoCoffeeEffect\": \"<integer>\",\n        \"autoBugsEffect\": \"<integer>\",\n        \"specialEffect\": \"<string>\",\n        \"choices\": [\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          },\n          {\n            \"id\": \"<long>\",\n            \"label\": \"<string>\",\n            \"cashEffect\": \"<integer>\",\n            \"customersEffect\": \"<integer>\",\n            \"moraleEffect\": \"<integer>\",\n            \"coffeeEffect\": \"<integer>\",\n            \"bugsEffect\": \"<integer>\",\n            \"specialEffect\": \"<string>\"\n          }\n        ]\n      },\n      \"requiresChoice\": \"<boolean>\"\n    }\n  ],\n  \"availableActions\": [\n    {\n      \"type\": \"INVEST_CRYPTO\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    },\n    {\n      \"type\": \"TRAVEL\",\n      \"cashCost\": \"<integer>\",\n      \"coffeeCost\": \"<integer>\",\n      \"moraleCost\": \"<integer>\",\n      \"weatherSurcharge\": {\n        \"coffeeAdded\": \"<integer>\",\n        \"cashAdded\": \"<integer>\",\n        \"moraleAdded\": \"<integer>\"\n      },\n      \"requiresDestination\": \"<boolean>\",\n      \"requiresAmount\": \"<boolean>\",\n      \"minAmount\": \"<integer>\",\n      \"maxAmount\": \"<integer>\",\n      \"disabledReason\": \"<string>\"\n    }\n  ],\n  \"availableNextLocations\": [\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"routeType\": \"MAIN_ROUTE\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    },\n    {\n      \"locationId\": \"<long>\",\n      \"name\": \"<string>\",\n      \"detour\": \"<boolean>\",\n      \"routeType\": \"DETOUR\",\n      \"eta\": \"<integer>\",\n      \"detourBonusStat\": \"<string>\",\n      \"detourBonusValue\": \"<integer>\"\n    }\n  ],\n  \"lastResolution\": {\n    \"eventResolutions\": [\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      },\n      {\n        \"eventId\": \"<long>\",\n        \"choiceId\": \"<long>\",\n        \"statDeltas\": {\n          \"cash\": \"<integer>\",\n          \"customers\": \"<integer>\",\n          \"morale\": \"<integer>\",\n          \"coffee\": \"<integer>\"\n        },\n        \"triggeredGameOver\": \"<boolean>\",\n        \"dynamicNote\": \"<string>\"\n      }\n    ],\n    \"passiveDeltas\": {\n      \"cashFromEconomy\": \"<integer>\",\n      \"coffeeDecay\": \"<integer>\",\n      \"temperatureModifier\": {\n        \"morale\": \"<integer>\",\n        \"coffee\": \"<integer>\"\n      },\n      \"cryptoSettlementCredited\": \"<integer>\"\n    },\n    \"actionResolution\": {\n      \"actionType\": \"MARKETING\",\n      \"cashDelta\": \"<integer>\",\n      \"coffeeDelta\": \"<integer>\",\n      \"moraleDelta\": \"<integer>\",\n      \"customersDelta\": \"<integer>\",\n      \"destinationLocationId\": \"<long>\",\n      \"weatherSurcharges\": {\n        \"coffee\": \"<integer>\"\n      },\n      \"detourBonusApplied\": \"<string>\",\n      \"notes\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    \"winLoss\": {\n      \"ended\": \"<boolean>\",\n      \"reason\": \"ACQUIRED\"\n    }\n  }\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "gameId",
+      "value": ""
+    }
+  ]
+}
